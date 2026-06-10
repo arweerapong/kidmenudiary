@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#FF8A65">
+<link rel="manifest" href="./manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>เมนูหนูน้อย 🍚</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFF8EE; --ink:#5b4636; --ink2:#9a8270;
+  --coral:#FF8A65; --coral2:#ffe3d8;
+  --mint:#7cc6a4; --mint2:#e0f3ea;
+  --sun:#FFC75F; --sun2:#fff1d6;
+  --berry:#c97bb2; --berry2:#f7e4f1;
+  --red:#e35d5d; --card:#fffdf8;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Mali','Segoe UI',sans-serif;font-size:15px;line-height:1.45}
+.app{max-width:520px;margin:0 auto;padding:0 12px 92px}
+header{position:sticky;top:0;z-index:20;background:var(--bg);padding:10px 2px 6px;display:flex;align-items:center;gap:10px;border-bottom:2px dashed #e8d9c5}
+header .logo{width:44px;height:44px;flex:none}
+header h1{font-size:19px;margin:0;flex:1;line-height:1.2}
+header h1 small{display:block;font-size:11px;color:var(--ink2);font-weight:400}
+.iconbtn{background:var(--card);border:2px solid var(--ink);border-radius:14px 16px 13px 17px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink)}
+.iconbtn svg{width:21px;height:21px}
+.chip{display:inline-flex;align-items:center;gap:5px;background:var(--sun2);border:1.6px solid var(--ink);border-radius:14px 18px 15px 17px;padding:3px 11px;font-size:13px;cursor:pointer}
+.chip.sel{background:var(--coral);color:#fff}
+.chip.warn{background:#fde3e3;border-color:var(--red);color:var(--red)}
+.card{background:var(--card);border:2px solid var(--ink);border-radius:18px 22px 17px 23px;padding:13px 14px;margin:11px 0;box-shadow:3px 3px 0 #e9dcc8}
+.card.flat{box-shadow:none}
+.card h3{margin:0 0 8px;font-size:16px;display:flex;align-items:center;gap:7px}
+.card h3 svg{width:20px;height:20px;flex:none}
+.btn{font-family:inherit;font-size:14px;font-weight:600;background:var(--card);color:var(--ink);border:2px solid var(--ink);border-radius:13px 17px 14px 18px;padding:8px 15px;cursor:pointer;box-shadow:2px 2px 0 #d9c9b2}
+.btn:active{transform:translate(2px,2px);box-shadow:none}
+.btn.pri{background:var(--coral);color:#fff}
+.btn.mint{background:var(--mint);color:#fff}
+.btn.sun{background:var(--sun)}
+.btn.sm{font-size:12.5px;padding:5px 11px}
+.btn.ghost{box-shadow:none;border-style:dashed;background:transparent}
+.btn:disabled{opacity:.45;pointer-events:none}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.row.between{justify-content:space-between}
+.muted{color:var(--ink2);font-size:12.5px}
+input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink);background:#fff;border:2px solid var(--ink);border-radius:11px 14px 12px 15px;padding:8px 10px;width:100%;outline:none}
+textarea{resize:vertical;min-height:60px}
+label.fl{display:block;font-size:12.5px;font-weight:600;margin:9px 0 4px;color:var(--ink2)}
+/* bottom nav */
+nav{position:fixed;bottom:0;left:0;right:0;z-index:30;background:var(--card);border-top:2px solid var(--ink);display:flex;max-width:520px;margin:0 auto;border-radius:22px 22px 0 0;box-shadow:0 -3px 0 #e9dcc8}
+nav button{flex:1;background:none;border:none;font-family:inherit;font-size:10.5px;color:var(--ink2);padding:8px 2px 9px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav button svg{width:23px;height:23px}
+nav button.on{color:var(--coral);font-weight:700}
+nav button.on svg{stroke-width:2.4}
+/* meal log */
+.mealhead{display:flex;align-items:center;gap:8px;margin:14px 2px 4px}
+.mealhead .t{font-weight:700;font-size:15px}
+.logitem{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1.5px dashed #ecdfca}
+.logitem:last-child{border-bottom:none}
+.logitem .ic{width:38px;height:38px;flex:none;background:var(--sun2);border:1.8px solid var(--ink);border-radius:12px 14px 11px 15px;display:flex;align-items:center;justify-content:center}
+.logitem .ic svg{width:22px;height:22px}
+.bar{height:13px;background:#f1e7d6;border:1.6px solid var(--ink);border-radius:8px;overflow:hidden;position:relative}
+.bar i{display:block;height:100%;background:var(--mint);border-radius:0 6px 6px 0;transition:width .4s}
+.bar.over i{background:var(--sun)}
+.nutrow{display:flex;align-items:center;gap:8px;margin:7px 0;font-size:12.5px}
+.nutrow .nm{width:74px;flex:none;font-weight:600}
+.nutrow .bar{flex:1}
+.nutrow .vv{width:96px;flex:none;text-align:right;color:var(--ink2);font-size:11.5px}
+/* recipe cards */
+.rcard{display:flex;gap:11px;align-items:center;cursor:pointer}
+.rcard .ric{width:52px;height:52px;flex:none;background:var(--mint2);border:2px solid var(--ink);border-radius:16px 18px 15px 19px;display:flex;align-items:center;justify-content:center}
+.rcard .ric svg{width:32px;height:32px}
+.rcard .nm{font-weight:700;font-size:14.5px}
+.tag{display:inline-block;font-size:10.5px;background:var(--berry2);border:1.4px solid var(--ink);border-radius:8px 10px 9px 11px;padding:1px 7px;margin:2px 3px 0 0}
+.tag.age{background:var(--sun2)}
+.tag.al{background:#fde3e3;color:var(--red);border-color:var(--red)}
+/* modal */
+.mwrap{position:fixed;inset:0;background:rgba(70,50,35,.45);z-index:50;display:none;align-items:flex-end;justify-content:center}
+.mwrap.show{display:flex}
+.modal{background:var(--bg);width:100%;max-width:520px;max-height:88vh;overflow-y:auto;border-radius:26px 26px 0 0;border:2.5px solid var(--ink);border-bottom:none;padding:16px 16px 28px;animation:up .22s ease}
+@keyframes up{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+.modal h2{font-size:18px;margin:2px 36px 10px 2px}
+.mclose{position:absolute;margin-left:auto;float:right;width:34px;height:34px;border-radius:50%;border:2px solid var(--ink);background:#fff;font-size:16px;cursor:pointer;font-family:inherit}
+/* tables */
+table.nut{width:100%;border-collapse:collapse;font-size:12.5px}
+table.nut td{padding:3px 4px;border-bottom:1px dashed #e8d9c5}
+table.nut td:last-child{text-align:right;font-weight:600}
+.steps{padding-left:0;list-style:none;counter-reset:s}
+.steps li{counter-increment:s;display:flex;gap:9px;margin:8px 0;font-size:13.5px}
+.steps li::before{content:counter(s);flex:none;width:22px;height:22px;background:var(--coral);color:#fff;border:1.6px solid var(--ink);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.inglist{font-size:13.5px}
+.inglist .it{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed #e8d9c5}
+/* plan */
+.pday{margin:10px 0}
+.pday .dt{font-weight:700;font-size:13.5px;margin-bottom:4px}
+.pslot{display:flex;gap:6px;flex-wrap:wrap}
+.pslot .ps{flex:1;min-width:45%;background:#fff;border:1.7px dashed var(--ink2);border-radius:12px 14px 11px 15px;padding:6px 8px;font-size:12px;cursor:pointer;min-height:44px}
+.pslot .ps.has{border-style:solid;border-color:var(--ink);background:var(--mint2)}
+.pslot .ps b{display:block;font-size:11px;color:var(--ink2);font-weight:600}
+/* stats */
+.mchart{display:flex;align-items:flex-end;gap:2px;height:90px;padding:4px 2px;border-bottom:2px solid var(--ink)}
+.mchart i{flex:1;background:var(--coral);border-radius:4px 4px 0 0;min-height:2px;opacity:.85}
+.mchart i.lo{background:var(--sun)}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.kpi{background:var(--sun2);border:1.8px solid var(--ink);border-radius:14px 17px 13px 18px;padding:8px 10px;text-align:center}
+.kpi b{font-size:19px;display:block}
+.kpi span{font-size:11px;color:var(--ink2)}
+/* trial */
+.trow{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1.5px dashed #ecdfca}
+.trow:last-child{border-bottom:none}
+.dot{width:12px;height:12px;border-radius:50%;border:1.6px solid var(--ink);flex:none}
+.dot.try{background:var(--sun)} .dot.pass{background:var(--mint)} .dot.fail{background:var(--red)}
+.empty{text-align:center;color:var(--ink2);padding:22px 8px;font-size:13.5px}
+.empty svg{width:54px;height:54px;opacity:.5;display:block;margin:0 auto 8px}
+.seg{display:flex;gap:0;border:2px solid var(--ink);border-radius:14px;overflow:hidden;background:#fff}
+.seg button{flex:1;border:none;background:none;font-family:inherit;font-size:12.5px;padding:7px 4px;cursor:pointer;color:var(--ink2)}
+.seg button.on{background:var(--coral);color:#fff;font-weight:700}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:96px;background:var(--ink);color:#fff;padding:9px 18px;border-radius:16px;font-size:13.5px;z-index:99;opacity:0;transition:opacity .25s;pointer-events:none;max-width:88%;text-align:center}
+.toast.show{opacity:1}
+.ingrow{display:flex;gap:6px;margin:5px 0;align-items:center}
+.ingrow select{flex:1}
+.ingrow input{width:72px;flex:none}
+.ingrow .x{flex:none;width:30px;height:30px;border-radius:50%;border:1.8px solid var(--red);background:#fff;color:var(--red);cursor:pointer;font-family:inherit}
+.warnbox{background:#fde3e3;border:2px solid var(--red);border-radius:13px 16px 12px 17px;padding:8px 12px;color:var(--red);font-size:13px;margin:8px 0}
+.okbox{background:var(--mint2);border:2px solid var(--mint);border-radius:13px 16px 12px 17px;padding:8px 12px;font-size:13px;margin:8px 0}
+h4.sec{margin:16px 2px 6px;font-size:14px;color:var(--ink2)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+<defs>
+<g id="i-bowl"><path d="M4 13h24c0 6-4 11-12 11S4 19 4 13Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 13c0-2 2-4 7-4s7 2 7 4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 4c0 1.5 1 1.5 1 3M17 3c0 1.5 1 1.5 1 3" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/><circle cx="13" cy="17" r=".9" fill="currentColor"/><circle cx="19" cy="17" r=".9" fill="currentColor"/><path d="M14.5 19.5q1.5 1.5 3 0" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/></g>
+<g id="i-book"><path d="M5 6c4-2 8-2 11 0v18c-3-2-7-2-11 0V6Zm22 0c-4-2-8-2-11 0v18c3-2 7-2 11 0V6Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M8 11c2-.8 4-.8 5.5 0M8 15c2-.8 4-.8 5.5 0M19 11c2-.8 4-.8 5.5 0" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></g>
+<g id="i-cal"><rect x="4" y="6" width="24" height="21" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 12h24M10 3v6M22 3v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="11" cy="18" r="1.4" fill="currentColor"/><circle cx="16" cy="18" r="1.4" fill="currentColor"/><circle cx="21" cy="18" r="1.4" fill="currentColor"/><circle cx="11" cy="23" r="1.4" fill="currentColor"/></g>
+<g id="i-leaf"><path d="M16 27C8 22 6 12 8 6c7 0 17 3 16 13-.6 6-5 8-8 8Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M11 10c3 4 7 9 10 14" stroke="currentColor" stroke-width="1.7" fill="none" stroke-linecap="round"/></g>
+<g id="i-chart"><path d="M5 4v23h23" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M10 21v-6M16 21V9M22 21v-9" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="25" cy="7" r="2.4" fill="none" stroke="currentColor" stroke-width="1.7"/></g>
+<g id="i-gear"><circle cx="16" cy="16" r="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 4v4M16 24v4M4 16h4M24 16h4M7.5 7.5l2.8 2.8M21.7 21.7l2.8 2.8M24.5 7.5l-2.8 2.8M10.3 21.7l-2.8 2.8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></g>
+<g id="i-baby"><circle cx="16" cy="13" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 4c-1 0-2-1.5-.5-2.5M13 12.5h.02M19 12.5h.02" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" fill="none"/><path d="M13.5 16q2.5 2 5 0" stroke="currentColor" stroke-width="1.7" fill="none" stroke-linecap="round"/><path d="M8 25c2-2 14-2 16 0" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></g>
+<g id="i-plus"><circle cx="16" cy="16" r="12" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 10v12M10 16h12" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></g>
+<g id="i-star"><path d="M16 4l3.4 7.4 8 .9-6 5.5 1.7 7.9L16 21.6l-7.1 4.1 1.7-7.9-6-5.5 8-.9L16 4Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></g>
+<g id="i-banana"><path d="M6 8c-1 9 5 17 15 17 3 0 5-1 6-3-12 1-17-7-16-16l-2-1-3 3Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 6l2-2 2 1" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></g>
+<g id="i-fish"><path d="M4 16c4-6 10-8 15-6l6-4v8l3 2-3 2v8l-6-4c-5 2-11 0-15-6Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="10" cy="15" r="1.2" fill="currentColor"/><path d="M14 12c1 2 1 5 0 7" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></g>
+<g id="i-egg"><path d="M16 4C11 9 7 15 7 20a9 9 0 0 0 18 0c0-5-4-11-9-16Z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="13" cy="19" r=".9" fill="currentColor"/><circle cx="19" cy="19" r=".9" fill="currentColor"/><path d="M14.5 22q1.5 1.3 3 0" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></g>
+<g id="i-carrot"><path d="M19 13L7 27c-1 1-3-1-2-2L17 11" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M17 11c-1-3 1-6 4-6 0-1.5 2-2 3-1 1-1 3 0 2.5 2 2 .5 2 3 0 4 .5 3-3 5-6 3l-3.5-2Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 18l2 2M9 22l2 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></g>
+<g id="i-milk"><path d="M12 4h8v4l3 6v13a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V14l3-6V4Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 17h14" stroke="currentColor" stroke-width="1.8"/><path d="M12 8h8" stroke="currentColor" stroke-width="1.8"/><path d="M13 22c1.5-1.5 4.5-1.5 6 0" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></g>
+<g id="i-pot"><path d="M5 12h22v8a7 7 0 0 1-7 7h-8a7 7 0 0 1-7-7v-8Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M2 12h28M11 12V9m10 3V9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M13 4c0 1.5 1 1.5 1 3M19 3c0 1.5 1 1.5 1 3" stroke="currentColor" stroke-width="1.7" fill="none" stroke-linecap="round"/></g>
+<g id="i-apple"><path d="M16 9c-2-2-5-2-7 0s-3 7 0 12 5 5 7 4c2 1 4 1 7-4s2-10 0-12-5-2-7 0Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M16 9c0-3 1-4 3-5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M19 6c2-1 3 0 3 1s-2 2-3 1" fill="none" stroke="currentColor" stroke-width="1.6"/></g>
+<g id="i-bread"><path d="M5 14c0-4 4-7 11-7s11 3 11 7c0 2-1 3-2 3v8a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-8c-1 0-2-1-2-3Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 13c1 1 1 3 0 4M17 13c1 1 1 3 0 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/></g>
+<g id="i-search"><circle cx="14" cy="14" r="9" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M21 21l7 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></g>
+<g id="i-grow"><path d="M5 28h22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16 28V14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16 18c-7 0-9-4-9-9 6 0 9 3 9 9Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M16 14c6 0 8-3 8-8-5 0-8 3-8 8Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M24 22l2-2 2 2M26 20v6" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g id="i-dice"><rect x="5" y="5" width="22" height="22" rx="6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="11.5" cy="11.5" r="1.7" fill="currentColor"/><circle cx="20.5" cy="20.5" r="1.7" fill="currentColor"/><circle cx="20.5" cy="11.5" r="1.7" fill="currentColor"/><circle cx="11.5" cy="20.5" r="1.7" fill="currentColor"/></g>
+</defs>
+</svg>
+
+<div class="app">
+<header>
+  <svg class="logo" viewBox="0 0 32 32" style="color:var(--coral)"><use href="#i-bowl"/></svg>
+  <h1>เมนูหนูน้อย<small>บันทึก & คิดเมนูสำหรับลูกรัก 6 เดือน – 3 ขวบ</small></h1>
+  <button class="iconbtn" onclick="openSettings()" title="ตั้งค่า"><svg viewBox="0 0 32 32"><use href="#i-gear"/></svg></button>
+</header>
+<div id="childbar" style="padding:9px 2px 0;display:flex;gap:6px;flex-wrap:wrap"></div>
+<main id="view"></main>
+</div>
+
+<nav id="nav"></nav>
+<div class="mwrap" id="mwrap" onclick="if(event.target===this)closeModal()"><div class="modal" id="modal"></div></div>
+<div class="mwrap" id="mwrap2" style="z-index:60" onclick="if(event.target===this)closeModal2()"><div class="modal" id="modal2"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= ฐานข้อมูลวัตถุดิบ (ต่อ 100 กรัม) =================
+   v:[พลังงาน kcal, โปรตีน g, ไขมัน g, คาร์บ g, เหล็ก mg, แคลเซียม mg, วิตามินเอ µg, วิตามินซี mg]
+   a: สารก่อภูมิแพ้, g: หมวด, ic: ไอคอน */
+const ING={
+rice:{n:'ข้าวสวย',g:'แป้ง',ic:'i-bowl',v:[130,2.7,0.3,28,0.2,10,0,0]},
+ricebr:{n:'ข้าวกล้องสุก',g:'แป้ง',ic:'i-bowl',v:[112,2.3,0.8,24,0.5,10,0,0]},
+ricep:{n:'ข้าวต้ม/โจ๊ก',g:'แป้ง',ic:'i-bowl',v:[52,1.1,0.1,11,0.1,4,0,0]},
+oat:{n:'ข้าวโอ๊ต (แห้ง)',g:'แป้ง',ic:'i-bowl',v:[389,16.9,6.9,66,4.7,54,0,0]},
+quinoa:{n:'ควินัวสุก',g:'แป้ง',ic:'i-bowl',v:[120,4.4,1.9,21,1.5,17,0,0]},
+noodle:{n:'เส้นก๋วยเตี๋ยว (สุก)',g:'แป้ง',ic:'i-bowl',v:[109,1.8,0.2,25,0.3,7,0,0]},
+pasta:{n:'พาสต้า/มักกะโรนี (สุก)',g:'แป้ง',a:'แป้งสาลี',ic:'i-bowl',v:[131,5,1.1,25,0.5,7,0,0]},
+bread:{n:'ขนมปังโฮลวีต',g:'แป้ง',a:'แป้งสาลี',ic:'i-bread',v:[247,13,3.4,41,2.5,107,0,0]},
+flour:{n:'แป้งสาลี',g:'แป้ง',a:'แป้งสาลี',ic:'i-bread',v:[364,10,1,76,1.2,15,0,0]},
+potato:{n:'มันฝรั่งต้ม',g:'แป้ง',ic:'i-carrot',v:[87,1.9,0.1,20,0.3,5,0,13]},
+sweetpot:{n:'มันหวาน/มันม่วงนึ่ง',g:'แป้ง',ic:'i-carrot',v:[90,2,0.2,21,0.6,30,709,13]},
+pumpkin:{n:'ฟักทองนึ่ง',g:'ผัก',ic:'i-carrot',v:[26,1,0.1,6,0.4,21,427,9]},
+carrot:{n:'แครอท',g:'ผัก',ic:'i-carrot',v:[35,0.8,0.2,8,0.3,33,835,6]},
+broccoli:{n:'บรอกโคลี',g:'ผัก',ic:'i-leaf',v:[35,2.4,0.4,7,0.7,40,77,65]},
+spinach:{n:'ผักโขม',g:'ผัก',ic:'i-leaf',v:[23,2.9,0.4,3.6,2.7,99,469,28]},
+tamlueng:{n:'ตำลึง',g:'ผัก',ic:'i-leaf',v:[21,3.3,0.3,3.4,4.6,126,428,13]},
+cabbage:{n:'กะหล่ำปลี/ผักกาดขาว',g:'ผัก',ic:'i-leaf',v:[16,1.2,0.1,3,0.3,77,16,27]},
+tomato:{n:'มะเขือเทศ',g:'ผัก',ic:'i-apple',v:[18,0.9,0.2,3.9,0.3,10,42,14]},
+corn:{n:'ข้าวโพดหวาน',g:'ผัก',ic:'i-carrot',v:[96,3.4,1.5,21,0.5,2,9,7]},
+peas:{n:'ถั่วลันเตา',g:'ผัก',ic:'i-leaf',v:[81,5.4,0.4,14,1.5,25,38,40]},
+mushroom:{n:'เห็ด',g:'ผัก',ic:'i-leaf',v:[22,3.1,0.3,3.3,0.5,3,0,2]},
+zucchini:{n:'บวบ/ซูกินี',g:'ผัก',ic:'i-leaf',v:[17,1.2,0.3,3.1,0.4,16,10,18]},
+onion:{n:'หอมใหญ่',g:'ผัก',ic:'i-leaf',v:[40,1.1,0.1,9,0.2,23,0,7]},
+tofu:{n:'เต้าหู้ขาว',g:'โปรตีน',a:'ถั่วเหลือง',ic:'i-egg',v:[76,8,4.8,1.9,1.6,200,0,0]},
+egg:{n:'ไข่ไก่ (ทั้งฟอง)',g:'โปรตีน',a:'ไข่',ic:'i-egg',v:[155,13,11,1.1,1.8,56,160,0]},
+yolk:{n:'ไข่แดง',g:'โปรตีน',a:'ไข่',ic:'i-egg',v:[322,16,27,3.6,2.7,129,381,0]},
+chickb:{n:'อกไก่',g:'โปรตีน',ic:'i-pot',v:[165,31,3.6,0,1,15,9,0]},
+chickt:{n:'สะโพกไก่',g:'โปรตีน',ic:'i-pot',v:[209,26,11,0,1.3,12,19,0]},
+liver:{n:'ตับไก่ (สุก)',g:'โปรตีน',ic:'i-pot',v:[167,24.5,6.5,0.9,11.6,11,3296,28]},
+pork:{n:'หมูสับไม่ติดมัน/สันใน',g:'โปรตีน',ic:'i-pot',v:[143,21,6,0,1,6,2,0]},
+beef:{n:'เนื้อวัว',g:'โปรตีน',ic:'i-pot',v:[250,26,15,0,2.6,18,0,0]},
+fishn:{n:'ปลานิล/ปลากะพง',g:'โปรตีน',a:'ปลา',ic:'i-fish',v:[96,20,1.7,0,0.6,10,0,0]},
+salmon:{n:'ปลาแซลมอน',g:'โปรตีน',a:'ปลา',ic:'i-fish',v:[208,20,13,0,0.3,9,59,0]},
+fishtu:{n:'ปลาทู',g:'โปรตีน',a:'ปลา',ic:'i-fish',v:[158,21,8,0,1.6,12,0,0]},
+shrimp:{n:'กุ้ง',g:'โปรตีน',a:'กุ้ง/สัตว์น้ำมีเปลือก',ic:'i-fish',v:[99,24,0.3,0.2,0.5,70,54,0]},
+mungb:{n:'ถั่วเขียว/ถั่วแดงต้ม',g:'โปรตีน',ic:'i-leaf',v:[105,7,0.4,19,1.4,27,1,1]},
+bmilk:{n:'นมแม่',g:'นม',ic:'i-milk',v:[70,1,4.4,6.9,0.03,32,61,5]},
+fmilk:{n:'นมผงชง (นมสูตร)',g:'นม',a:'นมวัว',ic:'i-milk',v:[67,1.4,3.5,7.5,1,50,60,9]},
+cmilk:{n:'นมวัวสด',g:'นม',a:'นมวัว',ic:'i-milk',v:[61,3.2,3.3,4.8,0.03,113,46,0]},
+yogurt:{n:'โยเกิร์ตรสธรรมชาติ',g:'นม',a:'นมวัว',ic:'i-milk',v:[61,3.5,3.3,4.7,0.05,121,27,0.5]},
+cheese:{n:'ชีส',g:'นม',a:'นมวัว',ic:'i-milk',v:[402,25,33,1.3,0.7,721,330,0]},
+butter:{n:'เนยจืด',g:'ไขมัน',a:'นมวัว',ic:'i-milk',v:[717,0.9,81,0.1,0,24,684,0]},
+oil:{n:'น้ำมันรำข้าว/มะกอก',g:'ไขมัน',ic:'i-pot',v:[884,0,100,0,0,0,0,0]},
+avocado:{n:'อะโวคาโด',g:'ผลไม้',ic:'i-apple',v:[160,2,15,9,0.6,12,7,10]},
+banana:{n:'กล้วยน้ำว้า/หอม',g:'ผลไม้',ic:'i-banana',v:[89,1.1,0.3,23,0.3,5,3,9]},
+papaya:{n:'มะละกอสุก',g:'ผลไม้',ic:'i-apple',v:[43,0.5,0.3,11,0.3,20,47,61]},
+apple:{n:'แอปเปิล',g:'ผลไม้',ic:'i-apple',v:[52,0.3,0.2,14,0.1,6,3,5]},
+pear:{n:'สาลี่/ลูกแพร์',g:'ผลไม้',ic:'i-apple',v:[57,0.4,0.1,15,0.2,9,1,4]},
+orange:{n:'ส้ม',g:'ผลไม้',ic:'i-apple',v:[47,0.9,0.1,12,0.1,40,11,53]},
+mango:{n:'มะม่วงสุก',g:'ผลไม้',ic:'i-apple',v:[60,0.8,0.4,15,0.2,11,54,36]},
+watermelon:{n:'แตงโม',g:'ผลไม้',ic:'i-apple',v:[30,0.6,0.2,8,0.2,7,28,8]},
+grape:{n:'องุ่น (หั่นเสี้ยว)',g:'ผลไม้',ic:'i-apple',v:[69,0.7,0.2,18,0.4,10,3,3]},
+strawb:{n:'สตรอว์เบอร์รี',g:'ผลไม้',ic:'i-apple',v:[32,0.7,0.3,7.7,0.4,16,1,59]},
+blueb:{n:'บลูเบอร์รี',g:'ผลไม้',ic:'i-apple',v:[57,0.7,0.3,14,0.3,6,3,10]},
+sesame:{n:'งาดำบด',g:'อื่นๆ',a:'งา',ic:'i-leaf',v:[573,18,50,23,14.6,975,0,0]},
+almond:{n:'อัลมอนด์บดละเอียด',g:'อื่นๆ',a:'ถั่วเปลือกแข็ง',ic:'i-leaf',v:[579,21,50,22,3.7,269,0,0]},
+pbutter:{n:'เนยถั่ว',g:'อื่นๆ',a:'ถั่วลิสง',ic:'i-leaf',v:[588,25,50,20,1.9,49,0,0]}
+};
+const NUTL=[['kcal','พลังงาน','กิโลแคลอรี'],['prot','โปรตีน','กรัม'],['fat','ไขมัน','กรัม'],['carb','คาร์บ','กรัม'],['fe','ธาตุเหล็ก','มก.'],['ca','แคลเซียม','มก.'],['va','วิตามินเอ','µg'],['vc','วิตามินซี','มก.']];
+
+/* ================= คลังเมนูตามช่วงวัย ================= */
+const RECIPES=[
+{id:'r1',n:'โจ๊กฟักทองไข่แดง',a:[6,9],tx:'บดละเอียด',ic:'i-bowl',ings:[['ricep',120],['pumpkin',30],['yolk',9],['oil',2]],steps:['ต้มข้าวกับน้ำซุปจนเละนุ่ม','ใส่ฟักทองนึ่งบดละเอียด คนให้เข้ากัน','ตอกไข่ ใช้เฉพาะไข่แดง คนจนสุกทั่ว (สำคัญมาก ต้องสุก 100%)','บดหรือปั่นให้ละเอียดตามวัย เติมน้ำมันเล็กน้อยก่อนเสิร์ฟ']},
+{id:'r2',n:'ข้าวบดตับไก่ตำลึง',a:[6,9],tx:'บดละเอียด',ic:'i-pot',ings:[['ricep',100],['liver',15],['tamlueng',10],['oil',2]],steps:['ต้มตับไก่จนสุกทั่ว หั่นชิ้นเล็ก','ลวกใบตำลึงอ่อนจนนุ่ม','บดข้าวต้ม ตับ และตำลึงรวมกันจนเนียน','เติมน้ำซุปปรับความข้น + น้ำมันเล็กน้อย'],tip:'ตับไก่ให้ธาตุเหล็กและวิตามินเอสูงมาก ให้สัปดาห์ละ 1–2 ครั้งพอ'},
+{id:'r3',n:'มันหวานบดนม',a:[6,9],tx:'บดละเอียด',ic:'i-carrot',ings:[['sweetpot',50],['bmilk',30]],steps:['นึ่งมันหวานจนนิ่ม','บดผ่านกระชอนให้เนียน','ผสมนมแม่หรือนมผงปรับเนื้อให้เหลวพอเหมาะ']},
+{id:'r4',n:'กล้วยบดอะโวคาโด',a:[6,9],tx:'บดละเอียด',ic:'i-banana',ings:[['banana',40],['avocado',20]],steps:['เลือกกล้วยสุกงอม ขูดเอาแต่เนื้อ','บดอะโวคาโดสุกรวมกับกล้วยจนเนียน','เสิร์ฟทันที (อะโวคาโดดำเร็ว)']},
+{id:'r5',n:'โจ๊กปลานิลฟักทอง',a:[7,10],tx:'บดหยาบ',ic:'i-fish',ings:[['ricep',120],['fishn',20],['pumpkin',20],['oil',2]],steps:['นึ่งปลานิลจนสุก แกะเอาแต่เนื้อ เช็กก้างให้ละเอียด','ต้มข้าวต้มกับฟักทองจนนุ่ม','ใส่เนื้อปลา ยีให้เข้ากัน บดหยาบตามวัย']},
+{id:'r6',n:'ข้าวโอ๊ตบดมะละกอ',a:[6,9],tx:'บดละเอียด',ic:'i-bowl',ings:[['oat',15],['bmilk',60],['papaya',30]],steps:['ต้มข้าวโอ๊ตกับน้ำจนนุ่มเละ','ผสมนมแม่/นมผง คนให้เข้ากัน','บดมะละกอสุกใส่ คนเบาๆ พออุ่นแล้วเสิร์ฟ']},
+{id:'r7',n:'แครอทเต้าหู้บดข้าว',a:[6,9],tx:'บดละเอียด',ic:'i-carrot',ings:[['ricep',80],['carrot',30],['tofu',30]],steps:['นึ่งแครอทจนนิ่มมาก','ลวกเต้าหู้ขาวในน้ำเดือด 1 นาที','บดทุกอย่างรวมกับข้าวต้มจนเนียน']},
+{id:'r8',n:'มันฝรั่งบรอกโคลีบด',a:[7,10],tx:'บดหยาบ',ic:'i-leaf',ings:[['potato',50],['broccoli',25],['bmilk',30]],steps:['ต้มมันฝรั่งจนนิ่ม นึ่งบรอกโคลีเอาแต่ดอก','บดรวมกัน เติมนมปรับเนื้อ','9 เดือนขึ้นไปบดหยาบขึ้นเพื่อฝึกเคี้ยว']},
+{id:'r9',n:'ข้าวต้มหมูสับตำลึง',a:[9,18],tx:'สับหยาบ',ic:'i-pot',ings:[['ricep',150],['pork',25],['tamlueng',15],['oil',3]],steps:['ต้มข้าวต้มให้ข้นนุ่ม','ใส่หมูสับ คนเร็วๆ ให้กระจายไม่จับก้อน จนสุก','ใส่ตำลึงหั่นฝอย ต้มจนนุ่ม เติมน้ำมันก่อนปิดไฟ']},
+{id:'r10',n:'ไข่ตุ๋นเต้าหู้แครอท',a:[9,36],tx:'นุ่มเป็นชิ้น',ic:'i-egg',ings:[['egg',50],['tofu',30],['carrot',10],['bmilk',30]],steps:['ตีไข่กับนม กรองผ่านกระชอนให้เนื้อเนียน','ใส่เต้าหู้หั่นเต๋าเล็กและแครอทขูดละเอียด','นึ่งไฟอ่อน 12–15 นาทีจนสุกเซตตัว']},
+{id:'r11',n:'แพนเค้กกล้วยข้าวโอ๊ต',a:[9,36],tx:'ฟิงเกอร์ฟู้ด',ic:'i-banana',ings:[['banana',50],['oat',20],['egg',25],['oil',3]],steps:['บดกล้วยสุก ผสมไข่และข้าวโอ๊ตปั่นละเอียด พักไว้ 5 นาที','ตั้งกระทะไฟอ่อน ทาน้ำมันบาง','หยอดเป็นแผ่นเล็กพอดีมือหนู ทอดด้านละ 2 นาทีจนสุก'],tip:'ฟิงเกอร์ฟู้ดฝึกหยิบจับ เหมาะกับวัย 9 เดือนขึ้นไป'},
+{id:'r12',n:'ข้าวต้มแซลมอนบรอกโคลี',a:[9,18],tx:'สับหยาบ',ic:'i-fish',ings:[['ricep',150],['salmon',25],['broccoli',20],['oil',2]],steps:['นึ่งแซลมอนจนสุก ยีเป็นชิ้นเล็ก เช็กก้าง','ต้มข้าวต้มกับบรอกโคลีสับจนนุ่ม','ใส่ปลา คนให้เข้ากัน'],tip:'แซลมอนมีโอเมก้า 3 ช่วยพัฒนาสมอง'},
+{id:'r13',n:'มักกะโรนีไก่ฟักทอง',a:[10,36],tx:'นุ่มเป็นชิ้น',ic:'i-bowl',ings:[['pasta',60],['chickb',25],['pumpkin',30],['oil',3]],steps:['ต้มมักกะโรนีจนนุ่มกว่าปกติ หั่นชิ้นเล็ก','ผัดไก่สับกับน้ำมันจนสุก','ใส่ฟักทองนึ่งบด เติมน้ำซุปเล็กน้อย คลุกกับมักกะโรนี']},
+{id:'r14',n:'ผักนึ่งฟิงเกอร์ฟู้ด',a:[9,24],tx:'ฟิงเกอร์ฟู้ด',ic:'i-carrot',ings:[['carrot',40],['broccoli',30],['sweetpot',40]],steps:['หั่นผักเป็นแท่งยาวพอดีกำมือ','นึ่ง 10–15 นาทีจนนิ่ม บีบแล้วยุบง่าย','วางให้หนูหยิบกินเอง ผู้ใหญ่เฝ้าใกล้ๆ เสมอ']},
+{id:'r15',n:'โยเกิร์ตผลไม้รวม',a:[10,36],tx:'ของว่าง',ic:'i-milk',ings:[['yogurt',80],['banana',30],['blueb',20]],steps:['หั่นกล้วยชิ้นเล็ก บลูเบอร์รีผ่าครึ่ง','คลุกกับโยเกิร์ตรสธรรมชาติไม่หวาน','เสิร์ฟเย็นๆ เป็นของว่าง']},
+{id:'r16',n:'ข้าวผัดไข่ผักรวม',a:[12,36],tx:'ข้าวนุ่ม',ic:'i-egg',ings:[['rice',120],['egg',50],['carrot',15],['peas',15],['onion',10],['oil',5]],steps:['ผัดหอมใหญ่สับกับน้ำมันจนหอม','ใส่ไข่ ยีให้สุกกระจาย','ใส่ข้าวสวยนุ่ม แครอทและถั่วลันเตาต้มสุก ผัดให้เข้ากัน']},
+{id:'r17',n:'แกงจืดเต้าหู้หมูสับ + ข้าว',a:[12,36],tx:'น้ำซุปนุ่ม',ic:'i-pot',ings:[['rice',100],['tofu',40],['pork',25],['cabbage',20]],steps:['ต้มน้ำซุปกระดูกไก่หรือผัก','ปั้นหมูสับก้อนเล็ก ใส่ลงต้มจนสุก','ใส่เต้าหู้หั่นเต๋าและผักกาดขาว ต้มจนนุ่ม เสิร์ฟกับข้าว']},
+{id:'r18',n:'สปาเกตตีซอสมะเขือเทศไก่',a:[12,36],tx:'เส้นนุ่มหั่นสั้น',ic:'i-bowl',ings:[['pasta',80],['chickb',30],['tomato',40],['onion',10],['oil',5]],steps:['ลวกมะเขือเทศ ลอกเปลือก สับละเอียด','ผัดหอมใหญ่ ใส่ไก่สับจนสุก ใส่มะเขือเทศเคี่ยวจนข้น','คลุกเส้นต้มนุ่มหั่นสั้น']},
+{id:'r19',n:'ไข่เจียวนุ่มผักโขม + ข้าว',a:[12,36],tx:'นุ่มเป็นชิ้น',ic:'i-egg',ings:[['rice',100],['egg',55],['spinach',15],['oil',5]],steps:['ลวกผักโขม บีบน้ำ สับละเอียด','ตีไข่กับผักโขม','เจียวไฟอ่อนน้ำมันน้อยให้นุ่มฟู หั่นชิ้นพอดีคำ']},
+{id:'r20',n:'ข้าวหน้าปลาแซลมอนบรอกโคลี',a:[12,36],tx:'ข้าวนุ่ม',ic:'i-fish',ings:[['rice',110],['salmon',35],['broccoli',20],['oil',3]],steps:['ย่างหรือนึ่งแซลมอนจนสุก ยีชิ้นเล็ก','ลวกบรอกโคลีจนนุ่ม หั่นเล็ก','โปะบนข้าวสวยนุ่ม คลุกน้ำมันเล็กน้อย']},
+{id:'r21',n:'ซุปข้าวโพดไก่',a:[12,36],tx:'ซุปข้น',ic:'i-pot',ings:[['corn',50],['chickb',25],['potato',30],['cmilk',50]],steps:['ต้มมันฝรั่งกับข้าวโพดจนนิ่ม ปั่นหยาบ','ใส่ไก่สับ ต้มจนสุก','เติมนม คนพออุ่น อย่าให้เดือดแรง']},
+{id:'r22',n:'ก๋วยเตี๋ยวน้ำใสหมูสับ',a:[18,36],tx:'เส้นหั่นสั้น',ic:'i-bowl',ings:[['noodle',80],['pork',30],['cabbage',20],['carrot',10]],steps:['ต้มน้ำซุปใส ใส่หมูสับปั้นก้อนเล็กจนสุก','ใส่ผักหั่นฝอย ต้มจนนุ่ม','ลวกเส้น หั่นสั้น ใส่ชาม ตักน้ำซุปราด ไม่ปรุงเค็ม']},
+{id:'r23',n:'แซนด์วิชไข่อะโวคาโด',a:[18,36],tx:'หั่นชิ้นพอดีมือ',ic:'i-bread',ings:[['bread',50],['egg',50],['avocado',25]],steps:['ต้มไข่สุก บดกับอะโวคาโด','ทาบนขนมปัง ประกบ ตัดขอบ','หั่นชิ้นสามเหลี่ยมเล็กพอดีมือ']},
+{id:'r24',n:'ข้าวหน้าไก่ไข่ (โอยาโกะด้ง)',a:[18,36],tx:'ข้าวนุ่ม',ic:'i-egg',ings:[['rice',130],['chickt',40],['egg',50],['onion',15]],steps:['ต้มน้ำซุป ใส่หอมใหญ่ซอยและไก่หั่นชิ้นเล็กจนสุกนุ่ม','เทไข่ตีลงไป ปิดฝา รอจนไข่สุกทั่ว','ตักราดข้าวสวยนุ่ม']},
+{id:'r25',n:'ผัดผักรวมเต้าหู้ + ข้าว',a:[18,36],tx:'หั่นชิ้นเล็ก',ic:'i-leaf',ings:[['rice',120],['tofu',40],['broccoli',25],['carrot',15],['mushroom',15],['oil',5]],steps:['ทอดเต้าหู้หั่นเต๋าให้ผิวตึง','ผัดผักทั้งหมดกับน้ำมัน เติมน้ำซุปเล็กน้อยจนนุ่ม','ใส่เต้าหู้ คลุกเบาๆ เสิร์ฟกับข้าว']},
+{id:'r26',n:'ข้าวต้มกุ้ง',a:[18,36],tx:'ข้าวต้มนุ่ม',ic:'i-fish',ings:[['ricep',180],['shrimp',30],['carrot',10]],steps:['ต้มข้าวต้มกับน้ำซุป','ใส่กุ้งสับหยาบและแครอทขูด ต้มจนสุก','โรยต้นหอมซอยละเอียด'],tip:'กุ้งเป็นสารก่อภูมิแพ้ ลองครั้งแรกปริมาณน้อยและสังเกตอาการ'},
+{id:'r27',n:'ผลไม้รวมหั่นชิ้น',a:[9,36],tx:'ของว่าง',ic:'i-apple',ings:[['papaya',40],['banana',40]],steps:['หั่นผลไม้สุกนิ่มเป็นชิ้นยาวพอดีมือ (วัยเตาะแตะหั่นเต๋าเล็ก)','จัดใส่จาน ให้หยิบกินเอง']},
+{id:'r28',n:'ข้าวกล้องผัดปลาทูตำลึง',a:[12,36],tx:'ข้าวนุ่ม',ic:'i-fish',ings:[['ricebr',110],['fishtu',30],['tamlueng',15],['oil',4]],steps:['นึ่งปลาทู แกะเนื้อ เช็กก้างละเอียดมาก','ผัดตำลึงกับน้ำมัน ใส่ข้าวกล้องสุกนุ่ม','ใส่เนื้อปลา ผัดให้เข้ากัน'],tip:'ปลาทูเป็นแหล่งแคลเซียมและโอเมก้า 3 ราคาประหยัด'}
+];
+/* ================= สถานะ & ตัวช่วย ================= */
+const MEALS={br:'มื้อเช้า',lu:'มื้อกลางวัน',di:'มื้อเย็น',sn:'ของว่าง',mi:'นม'};
+const MEALIC={br:'i-egg',lu:'i-bowl',di:'i-pot',sn:'i-apple',mi:'i-milk'};
+const EATEN=[[1,'หมดเกลี้ยง 😋'],[0.75,'เกือบหมด'],[0.5,'ครึ่งหนึ่ง'],[0.25,'นิดหน่อย'],[0,'ไม่ยอมกิน']];
+const $=q=>document.querySelector(q);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+function dstr(d){d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+const THD=['อา','จ','อ','พ','พฤ','ศ','ส'];
+const THM=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+function thDate(s){const d=new Date(s+'T00:00');return THD[d.getDay()]+'. '+d.getDate()+' '+THM[d.getMonth()]}
+let S;
+function load(){try{S=JSON.parse(localStorage.getItem('kidmenu'))}catch(e){}
+ if(!S)S={children:[],active:null,logs:[],recipes:[],trials:[],plans:{},growth:[]};
+ S.recipes=S.recipes||[];S.trials=S.trials||[];S.plans=S.plans||{};S.logs=S.logs||[];S.growth=S.growth||[];S.ings=S.ings||[];mergeIngs();}
+function save(){localStorage.setItem('kidmenu',JSON.stringify(S))}
+function child(){return S.children.find(c=>c.id===S.active)}
+function ageM(c){c=c||child();if(!c)return 12;const b=new Date(c.bd+'T00:00'),n=new Date();
+ let m=(n.getFullYear()-b.getFullYear())*12+n.getMonth()-b.getMonth();if(n.getDate()<b.getDate())m--;return Math.max(0,m)}
+function ageTxt(m){const y=Math.floor(m/12),mm=m%12;
+ return y?(y+' ขวบ'+(mm?' '+mm+' เดือน':'')):(m+' เดือน')}
+function allRecipes(){return RECIPES.concat(S.recipes)}
+function getRecipe(id){return allRecipes().find(r=>r.id===id)}
+function nutOf(ings){const t=[0,0,0,0,0,0,0,0];
+ (ings||[]).forEach(([id,g])=>{const it=ING[id];if(!it)return;it.v.forEach((v,i)=>t[i]+=v*g/100)});return t}
+function target(){const m=ageM();
+ return m<12?{kcal:700,prot:15,fe:9,ca:270,va:400,vc:50}:{kcal:1000,prot:18,fe:6,ca:500,va:400,vc:30}}
+function failedAllergens(){const c=child();if(!c)return[];
+ return S.trials.filter(t=>t.child===c.id&&t.status==='fail').map(t=>t.ing?(ING[t.ing]?.a||ING[t.ing]?.n):t.name).filter(Boolean)
+ .concat(c.allergies||[])}
+function recipeAllergens(r){return [...new Set(r.ings.map(([id])=>ING[id]?.a).filter(Boolean))]}
+function recipeRisk(r){const bad=failedAllergens();
+ return r.ings.some(([id])=>{const it=ING[id];return it&&(bad.includes(it.a)||bad.includes(it.n))})}
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2200)}
+function fmt(n,d=0){return Number(n).toLocaleString('th-TH',{maximumFractionDigits:d,minimumFractionDigits:0})}
+function svg(id,st){return `<svg viewBox="0 0 32 32" ${st?`style="${st}"`:''}><use href="#${id}"/></svg>`}
+function ingOptions(sel){let h='<option value="">– เลือกวัตถุดิบ –</option>';const gs={};
+ Object.entries(ING).forEach(([id,it])=>{(gs[it.g]=gs[it.g]||[]).push([id,it])});
+ Object.entries(gs).forEach(([g,arr])=>{h+=`<optgroup label="${g}">`+arr.map(([id,it])=>`<option value="${id}" ${id===sel?'selected':''}>${it.n}${it.custom?' ★':''}${it.a?' ⚠️':''}</option>`).join('')+'</optgroup>'});
+ return h}
+
+/* ================= Modal ================= */
+function openModal(html){$('#modal').innerHTML='<button class="mclose" onclick="closeModal()">✕</button>'+html;$('#mwrap').classList.add('show')}
+function closeModal(){$('#mwrap').classList.remove('show')}
+function openModal2(html){$('#modal2').innerHTML='<button class="mclose" onclick="closeModal2()">\u2715</button>'+html;$('#mwrap2').classList.add('show')}
+function closeModal2(){$('#mwrap2').classList.remove('show')}
+
+/* ================= วัตถุดิบกำหนดเอง ================= */
+function mergeIngs(){(S.ings||[]).forEach(it=>{ING[it.id]={n:it.n,g:it.g,a:it.a||undefined,ic:'i-star',v:it.v,custom:true}})}
+const ALLERGENS=['ไข่','นมวัว','แป้งสาลี','ถั่วเหลือง','ปลา','กุ้ง/สัตว์น้ำมีเปลือก','ถั่วลิสง','ถั่วเปลือกแข็ง','งา'];
+function ingManager(){let h=`<h2>🧺 วัตถุดิบของฉัน</h2>
+ <p class="muted" style="font-size:12.5px;margin:4px 0 8px">เพิ่มวัตถุดิบที่ไม่มีในฐานข้อมูล พร้อมค่าโภชนาการต่อ 100 กรัม (ดูจากฉลากอาหารหรือค้นเว็บได้) แล้วเลือกใช้ได้ทุกที่ในแอป — รายการที่เพิ่มเองจะมีเครื่องหมาย ★</p>
+ <button class="btn pri sm" onclick="ingForm()">＋ เพิ่มวัตถุดิบใหม่</button>`;
+ if(S.ings.length){h+='<div class="card" style="margin-top:10px">';
+  S.ings.forEach(it=>{h+=`<div class="trow"><div style="flex:1"><b>${esc(it.n)}</b> <span class="tag">${esc(it.g)}</span>${it.a?`<span class="tag al">${esc(it.a)}</span>`:''}
+   <div class="muted">${fmt(it.v[0])} กิโลแคลอรี · โปรตีน ${fmt(it.v[1],1)} ก. ต่อ 100 ก.</div></div>
+   <button class="btn sm" onclick="ingForm('${it.id}')">✏️</button><button class="x" onclick="delIng('${it.id}')">✕</button></div>`});
+  h+='</div>'}
+ else h+=`<div class="empty">ยังไม่มีวัตถุดิบที่เพิ่มเอง</div>`;
+ openModal(h)}
+function ingForm(editId){const ed=editId?S.ings.find(x=>x.id===editId):null;
+ const NL=[['พลังงาน (กิโลแคลอรี)',0],['โปรตีน (ก.)',1],['ไขมัน (ก.)',2],['คาร์โบไฮเดรต (ก.)',3],['ธาตุเหล็ก (มก.)',4],['แคลเซียม (มก.)',5],['วิตามินเอ (µg)',6],['วิตามินซี (มก.)',7]];
+ const ax=ed&&ed.a&&!ALLERGENS.includes(ed.a);
+ openModal2(`<h2>${ed?'แก้ไขวัตถุดิบ':'เพิ่มวัตถุดิบใหม่'}</h2>
+  <label class="fl">ชื่อวัตถุดิบ</label><input id="if-n" value="${ed?esc(ed.n):''}" placeholder="เช่น ปลาช่อน, เมล็ดเจีย">
+  <label class="fl">หมวด</label><select id="if-g">${['โปรตีน','ผัก','ผลไม้','แป้ง','นม','ไขมัน','อื่นๆ'].map(g=>`<option ${ed&&ed.g===g?'selected':''}>${g}</option>`).join('')}</select>
+  <label class="fl">สารก่อภูมิแพ้ (ถ้ามี)</label>
+  <select id="if-a" onchange="document.getElementById('if-ax').style.display=this.value==='__x'?'block':'none'">
+   <option value="">– ไม่มี –</option>${ALLERGENS.map(a=>`<option ${ed&&ed.a===a?'selected':''}>${a}</option>`).join('')}<option value="__x" ${ax?'selected':''}>ระบุเอง...</option></select>
+  <input id="if-ax" value="${ax?esc(ed.a):''}" placeholder="พิมพ์ชื่อสารก่อภูมิแพ้" style="display:${ax?'block':'none'};margin-top:5px">
+  <label class="fl">คุณค่าทางโภชนาการ ต่อ 100 กรัม (ไม่ทราบใส่ 0 ได้)</label>
+  <div class="kpis">${NL.map(([lb,i])=>`<div><label class="fl" style="margin:3px 0 2px">${lb}</label><input id="if-v${i}" type="number" min="0" step="0.01" value="${ed?ed.v[i]:''}" placeholder="0"></div>`).join('')}</div>
+  <button class="btn pri" style="width:100%;margin-top:13px" onclick="saveIng('${editId||''}')">💾 บันทึกวัตถุดิบ</button>`)}
+function saveIng(editId){const n=$('#if-n').value.trim();
+ if(!n){toast('ใส่ชื่อวัตถุดิบก่อนนะคะ');return}
+ const v=[];for(let i=0;i<8;i++)v.push(+document.getElementById('if-v'+i).value||0);
+ let a=$('#if-a').value;if(a==='__x')a=$('#if-ax').value.trim();
+ const data={n,g:$('#if-g').value,a:a||null,v};
+ if(editId)Object.assign(S.ings.find(x=>x.id===editId),data);
+ else S.ings.push({id:'c'+uid(),...data});
+ mergeIngs();save();closeModal2();toast('บันทึกวัตถุดิบแล้ว 🧺');
+ if($('#lg-ings'))drawLogIngs();if($('#rf-ings'))drawRIngs();
+ if(($('#modal').innerHTML||'').includes('วัตถุดิบของฉัน'))ingManager()}
+function delIng(id){
+ const used=allRecipes().some(r=>r.ings.some(x=>x[0]===id))||S.logs.some(l=>(l.ings||[]).some(x=>x[0]===id));
+ if(used){toast('ลบไม่ได้ มีเมนูหรือบันทึกที่ใช้วัตถุดิบนี้อยู่');return}
+ if(!confirm('ลบวัตถุดิบนี้?'))return;
+ S.ings=S.ings.filter(x=>x.id!==id);delete ING[id];save();ingManager()}
+
+/* ================= แถบเลือกลูก ================= */
+function renderChildBar(){const el=$('#childbar');
+ if(!S.children.length){el.innerHTML='';return}
+ el.innerHTML=S.children.map(c=>`<span class="chip ${c.id===S.active?'sel':''}" onclick="setActive('${c.id}')">👶 ${esc(c.name)} <small style="opacity:.75">${ageTxt(ageM(c))}</small></span>`).join('')
+ +`<span class="chip" onclick="addChildForm()">＋ เพิ่ม</span>`}
+function setActive(id){S.active=id;save();renderAll()}
+
+/* ================= แท็บ ================= */
+const TABS=[['today','วันนี้','i-bowl'],['menu','เมนู','i-book'],['plan','แผน','i-cal'],['newfood','ลองใหม่','i-leaf'],['grow','เติบโต','i-grow'],['stats','สรุป','i-chart']];
+let TAB='today';
+function renderNav(){$('#nav').innerHTML=TABS.map(([id,n,ic])=>`<button class="${TAB===id?'on':''}" onclick="go('${id}')">${svg(ic)}${n}</button>`).join('')}
+function go(t){TAB=t;renderAll();window.scrollTo(0,0)}
+function renderAll(){renderChildBar();renderNav();
+ if(!S.children.length){renderWelcome();return}
+ if(!child())S.active=S.children[0].id;
+ ({today:renderToday,menu:renderMenu,plan:renderPlan,newfood:renderNewfood,grow:renderGrow,stats:renderStats})[TAB]()}
+
+function renderWelcome(){$('#view').innerHTML=`
+ <div class="card" style="text-align:center;padding:28px 16px">
+  <svg viewBox="0 0 32 32" style="width:72px;height:72px;color:var(--coral)"><use href="#i-baby"/></svg>
+  <h3 style="justify-content:center">ยินดีต้อนรับค่ะ!</h3>
+  <p class="muted">เริ่มต้นด้วยการเพิ่มข้อมูลลูกน้อย<br>เพื่อให้แอปแนะนำเมนูที่เหมาะกับวัยได้</p>
+  <button class="btn pri" onclick="addChildForm()">＋ เพิ่มลูกน้อยคนแรก</button>
+ </div>`}
+
+/* ================= หน้า: วันนี้ ================= */
+let TODAY_DATE=dstr();
+function renderToday(){const c=child(),m=ageM(),t=target();
+ const logs=S.logs.filter(l=>l.child===c.id&&l.date===TODAY_DATE);
+ const tot=[0,0,0,0,0,0,0,0];
+ logs.forEach(l=>nutOf(l.ings).forEach((v,i)=>tot[i]+=v*(l.eaten??1)));
+ const NUTBARS=[['kcal',0,t.kcal,'กิโลแคลอรี'],['prot',1,t.prot,'กรัม'],['fe',4,t.fe,'มก.'],['ca',5,t.ca,'มก.'],['va',6,t.va,'µg'],['vc',7,t.vc,'มก.']];
+ const names={kcal:'พลังงาน',prot:'โปรตีน',fe:'เหล็ก',ca:'แคลเซียม',va:'วิต.เอ',vc:'วิต.ซี'};
+ let h=`<div class="row between" style="margin-top:10px">
+   <button class="btn sm ghost" onclick="shiftDay(-1)">‹ ก่อนหน้า</button>
+   <b>${TODAY_DATE===dstr()?'วันนี้ · ':''}${thDate(TODAY_DATE)}</b>
+   <button class="btn sm ghost" onclick="shiftDay(1)" ${TODAY_DATE>=dstr()?'disabled':''}>ถัดไป ›</button>
+ </div>`;
+ // สรุปโภชนาการวันนี้
+ h+=`<div class="card"><h3>${svg('i-chart','width:20px;color:var(--mint)')} สารอาหารที่ได้รับ <span class="muted" style="font-weight:400;font-size:11px">(เทียบเป้าหมาย/วัน วัย ${ageTxt(m)})</span></h3>`;
+ NUTBARS.forEach(([k,i,tg,u])=>{const p=Math.min(100,tot[i]/tg*100);
+  h+=`<div class="nutrow"><span class="nm">${names[k]}</span><span class="bar ${tot[i]>tg*1.3?'over':''}"><i style="width:${p}%"></i></span><span class="vv">${fmt(tot[i],1)}/${fmt(tg)} ${u}</span></div>`});
+ h+=`<div class="muted" style="font-size:11px">* เป้าหมายโดยประมาณ รวมพลังงานจากนมแม่/นมผงด้วย ${m<12?'(วัยนี้นมยังเป็นอาหารหลัก)':''}</div></div>`;
+ // มื้ออาหาร
+ Object.entries(MEALS).forEach(([mk,mn])=>{const ml=logs.filter(l=>l.meal===mk);
+  h+=`<div class="mealhead"><svg viewBox="0 0 32 32" style="width:20px;height:20px;color:var(--coral)"><use href="#${MEALIC[mk]}"/></svg><span class="t">${mn}</span>
+    <button class="btn sm sun" style="margin-left:auto" onclick="logForm('${mk}')">＋ บันทึก</button></div>`;
+  if(!ml.length){h+=`<div class="muted" style="padding:2px 6px 6px">ยังไม่มีบันทึก</div>`}
+  else{h+='<div class="card flat" style="margin:4px 0 10px">';
+   ml.forEach(l=>{const n=nutOf(l.ings),e=EATEN.find(x=>x[0]===(l.eaten??1));
+    h+=`<div class="logitem" onclick="logDetail('${l.id}')" style="cursor:pointer">
+     <div class="ic"><svg viewBox="0 0 32 32"><use href="#${(l.rid&&getRecipe(l.rid)?.ic)||'i-bowl'}"/></svg></div>
+     <div style="flex:1"><b>${esc(l.name)}</b>
+      <div class="muted">${fmt(n[0]*(l.eaten??1))} กิโลแคลอรี · โปรตีน ${fmt(n[1]*(l.eaten??1),1)} ก. · กิน${e?e[1]:''}</div>
+      ${l.react?`<div style="color:var(--red);font-size:12px">⚠️ ${esc(l.react)}</div>`:''}</div>
+    </div>`});
+   h+='</div>'}});
+ // แผนของวันนี้
+ const plan=(S.plans[c.id]||{})[TODAY_DATE];
+ if(plan&&Object.values(plan).some(Boolean)){h+=`<div class="card" style="background:var(--mint2)"><h3>${svg('i-cal','width:19px')} ตามแผนวันนี้</h3>`;
+  Object.entries(plan).forEach(([mk,rid])=>{const r=rid&&getRecipe(rid);if(!r)return;
+   h+=`<div class="row between" style="margin:5px 0"><span style="font-size:13px"><b>${MEALS[mk]}</b> · ${esc(r.n)}</span>
+    <button class="btn sm" onclick="quickLogPlan('${mk}','${r.id}')">บันทึกว่ากินแล้ว</button></div>`});
+  h+='</div>'}
+ $('#view').innerHTML=h}
+function shiftDay(d){const x=new Date(TODAY_DATE+'T00:00');x.setDate(x.getDate()+d);TODAY_DATE=dstr(x);renderToday()}
+function quickLogPlan(mk,rid){const r=getRecipe(rid);
+ S.logs.push({id:uid(),child:S.active,date:TODAY_DATE,meal:mk,name:r.n,rid:r.id,ings:r.ings.map(x=>[...x]),eaten:1,react:'',note:''});
+ save();toast('บันทึกแล้ว 🎉');renderToday()}
+
+/* ===== ฟอร์มบันทึกมื้อ ===== */
+function logForm(mk,editId){const c=child(),m=ageM();
+ const ed=editId?S.logs.find(l=>l.id===editId):null;
+ const recs=allRecipes().filter(r=>m>=r.a[0]&&m<=r.a[1]+(m>=12?24:2));
+ let rows=ed?ed.ings.map(x=>[...x]):[['',0]];
+ window._logIngs=rows;
+ const recOpts=allRecipes().sort((a,b)=>a.n.localeCompare(b.n,'th')).map(r=>`<option value="${r.id}" ${ed&&ed.rid===r.id?'selected':''}>${r.n} (${r.a[0]}–${r.a[1]} ด.)</option>`).join('');
+ openModal(`<h2>${ed?'แก้ไขบันทึก':'บันทึก'+MEALS[mk]}</h2>
+  ${mk==='mi'?`<div class="row" style="margin-bottom:6px">
+    <button class="btn sm mint" onclick="milkQuick('bmilk')">นมแม่</button>
+    <button class="btn sm mint" onclick="milkQuick('fmilk')">นมผง</button>
+    <button class="btn sm mint" onclick="milkQuick('cmilk')">นมวัวสด</button></div>`:''}
+  <label class="fl">เลือกจากคลังเมนู (หรือพิมพ์ชื่อเองด้านล่าง)</label>
+  <select id="lg-rec" onchange="logPickRecipe()"><option value="">– เมนูกำหนดเอง –</option>${recOpts}</select>
+  <label class="fl">ชื่อเมนู</label>
+  <input id="lg-name" value="${ed?esc(ed.name):''}" placeholder="เช่น โจ๊กหมูใส่ไข่">
+  <label class="fl">วัตถุดิบ + ปริมาณ (กรัม/มล.) — ใช้คำนวณสารอาหาร</label>
+  <div id="lg-ings"></div>
+  <button class="btn sm ghost" onclick="window._logIngs.push(['',0]);drawLogIngs()">＋ เพิ่มวัตถุดิบ</button>
+  <button class="btn sm ghost" onclick="ingForm()">🆕 สร้างวัตถุดิบใหม่</button>
+  <div id="lg-nut" class="muted" style="margin-top:6px"></div>
+  <div id="lg-warn"></div>
+  <label class="fl">กินไปเท่าไหร่</label>
+  <div class="seg" id="lg-eaten">${EATEN.map(([v,n],i)=>`<button class="${(ed?ed.eaten:1)===v?'on':''}" data-v="${v}" onclick="segSel(this)">${n}</button>`).join('')}</div>
+  <label class="fl">ปฏิกิริยา/อาการ (ถ้ามี เช่น ผื่น คัน ถ่ายเหลว)</label>
+  <input id="lg-react" value="${ed?esc(ed.react):''}" placeholder="ปล่อยว่างถ้าปกติดี">
+  <label class="fl">โน้ตเพิ่มเติม</label>
+  <input id="lg-note" value="${ed?esc(ed.note||''):''}" placeholder="เช่น ชอบมาก ขอเพิ่ม">
+  <div class="row" style="margin-top:14px">
+   <button class="btn pri" style="flex:1" onclick="saveLog('${mk}','${editId||''}')">💾 บันทึก</button>
+   ${ed?`<button class="btn" style="color:var(--red);border-color:var(--red)" onclick="delLog('${editId}')">ลบ</button>`:''}
+  </div>`);
+ drawLogIngs()}
+function milkQuick(id){window._logIngs=[[id,150]];$('#lg-name').value=ING[id].n+' 150 มล.';drawLogIngs()}
+function segSel(b){[...b.parentNode.children].forEach(x=>x.classList.remove('on'));b.classList.add('on')}
+function logPickRecipe(){const rid=$('#lg-rec').value;if(!rid)return;const r=getRecipe(rid);
+ $('#lg-name').value=r.n;window._logIngs=r.ings.map(x=>[...x]);drawLogIngs()}
+function drawLogIngs(){const el=$('#lg-ings');if(!el)return;
+ el.innerHTML=window._logIngs.map((ig,i)=>`<div class="ingrow">
+   <select onchange="window._logIngs[${i}][0]=this.value;drawLogIngs()">${ingOptions(ig[0])}</select>
+   <input type="number" min="0" value="${ig[1]||''}" placeholder="กรัม" oninput="window._logIngs[${i}][1]=+this.value;updLogNut()">
+   <button class="x" onclick="window._logIngs.splice(${i},1);drawLogIngs()">✕</button></div>`).join('');
+ updLogNut()}
+function updLogNut(){const el=$('#lg-nut');if(!el)return;const n=nutOf(window._logIngs.filter(x=>x[0]));
+ el.innerHTML=`รวม: <b>${fmt(n[0])} กิโลแคลอรี</b> · โปรตีน ${fmt(n[1],1)} ก. · เหล็ก ${fmt(n[4],1)} มก. · แคลเซียม ${fmt(n[5])} มก.`;
+ const bad=failedAllergens();const w=$('#lg-warn');
+ const hit=window._logIngs.map(x=>ING[x[0]]).filter(it=>it&&(bad.includes(it.a)||bad.includes(it.n)));
+ w.innerHTML=hit.length?`<div class="warnbox">⚠️ ระวัง! มีวัตถุดิบที่ลูกเคยแพ้: ${[...new Set(hit.map(h=>h.n))].join(', ')}</div>`:''}
+function saveLog(mk,editId){const name=$('#lg-name').value.trim();
+ if(!name){toast('ใส่ชื่อเมนูก่อนนะคะ');return}
+ const eaten=+($('#lg-eaten .on')?.dataset.v??1);
+ const ings=window._logIngs.filter(x=>x[0]&&x[1]>0);
+ const rid=$('#lg-rec').value||null;
+ const data={child:S.active,date:TODAY_DATE,meal:mk,name,rid,ings,eaten,react:$('#lg-react').value.trim(),note:$('#lg-note').value.trim()};
+ if(editId){const l=S.logs.find(x=>x.id===editId);Object.assign(l,data)}
+ else S.logs.push({id:uid(),...data});
+ if(data.react){ // บันทึกอาการแพ้ลง trial อัตโนมัติถ้าตรงกับอาหารที่กำลังลอง
+  S.trials.filter(t=>t.child===S.active&&t.status==='try').forEach(t=>{
+   if(ings.some(([id])=>id===t.ing)){t.note=(t.note?t.note+' | ':'')+TODAY_DATE+': '+data.react}})}
+ save();closeModal();toast('บันทึกเรียบร้อย 🎉');renderToday()}
+function delLog(id){if(!confirm('ลบบันทึกนี้?'))return;S.logs=S.logs.filter(l=>l.id!==id);save();closeModal();renderToday()}
+function logDetail(id){const l=S.logs.find(x=>x.id===id);if(!l)return;
+ TODAY_DATE=l.date;logForm(l.meal,id)}
+/* ================= หน้า: คลังเมนู ================= */
+let MENU_Q='',MENU_AGE='fit';
+function renderMenu(){const m=ageM();
+ const made={};S.logs.filter(l=>l.child===S.active&&l.rid).forEach(l=>made[l.rid]=(made[l.rid]||0)+1);
+ let list=allRecipes();
+ if(MENU_AGE==='fit')list=list.filter(r=>m>=r.a[0]&&m<=r.a[1]);
+ if(MENU_Q)list=list.filter(r=>r.n.includes(MENU_Q)||r.ings.some(([id])=>ING[id]?.n.includes(MENU_Q)));
+ list.sort((a,b)=>a.a[0]-b.a[0]);
+ let h=`<div class="row" style="margin-top:12px">
+  <div style="flex:1;position:relative">
+   <input placeholder="ค้นหาเมนู / วัตถุดิบ..." value="${esc(MENU_Q)}" oninput="MENU_Q=this.value;renderMenu()" style="padding-left:34px">
+   <svg viewBox="0 0 32 32" style="width:17px;height:17px;position:absolute;left:11px;top:11px;color:var(--ink2)"><use href="#i-search"/></svg>
+  </div>
+  <button class="btn sm ${MENU_AGE==='fit'?'pri':''}" onclick="MENU_AGE=MENU_AGE==='fit'?'all':'fit';renderMenu()">${MENU_AGE==='fit'?'วัย '+ageTxt(m):'ทุกวัย'}</button>
+ </div>
+ <div class="row" style="margin-top:9px">
+  <button class="btn mint sm" onclick="randomMenu()">${svg('i-dice','width:16px;height:16px;vertical-align:-3px')} สุ่มเมนูวันนี้</button>
+  <button class="btn sun sm" onclick="recipeForm()">＋ เพิ่มเมนูของฉัน</button>
+  <button class="btn sm" onclick="ingManager()">🧺 วัตถุดิบ${S.ings.length?' ('+S.ings.length+')':''}</button>
+ </div>`;
+ if(!list.length)h+=`<div class="empty">${svg('i-search')}ไม่พบเมนูที่ค้นหา</div>`;
+ list.forEach(r=>{const n=nutOf(r.ings),risk=recipeRisk(r),als=recipeAllergens(r);
+  h+=`<div class="card rcard" onclick="recipeDetail('${r.id}')">
+   <div class="ric" style="background:${risk?'#fde3e3':'var(--mint2)'}"><svg viewBox="0 0 32 32"><use href="#${r.ic||'i-bowl'}"/></svg></div>
+   <div style="flex:1">
+    <div class="nm">${esc(r.n)} ${r.id[0]==='u'?'<span class="tag" style="background:var(--coral2)">เมนูของฉัน</span>':''}</div>
+    <div><span class="tag age">${r.a[0]}–${r.a[1]} เดือน</span><span class="tag">${esc(r.tx)}</span>
+     ${als.map(a=>`<span class="tag al">${a}</span>`).join('')}
+     ${made[r.id]?`<span class="tag" style="background:var(--mint2)">ทำแล้ว ${made[r.id]} ครั้ง</span>`:''}</div>
+    <div class="muted" style="margin-top:2px">${fmt(n[0])} กิโลแคลอรี · โปรตีน ${fmt(n[1],1)} ก.</div>
+   </div></div>`});
+ $('#view').innerHTML=h}
+
+function randomMenu(){const m=ageM(),bad=failedAllergens();
+ const pool=allRecipes().filter(r=>m>=r.a[0]&&m<=r.a[1]&&!recipeRisk(r));
+ if(!pool.length){toast('ไม่มีเมนูที่เหมาะกับวัยนี้');return}
+ const pick=k=>{const p=pool.filter(r=>k==='sn'?r.tx==='ของว่าง':r.tx!=='ของว่าง');return p.length?p[Math.floor(Math.random()*p.length)]:null};
+ const sel={br:pick('br'),lu:pick('lu'),di:pick('di'),sn:pick('sn')};
+ let h=`<h2>🎲 เมนูแนะนำวันนี้</h2><p class="muted">สุ่มจากเมนูที่เหมาะกับวัย ${ageTxt(m)} และเลี่ยงของที่เคยแพ้</p>`;
+ Object.entries(sel).forEach(([mk,r])=>{if(!r)return;const n=nutOf(r.ings);
+  h+=`<div class="card flat rcard" style="margin:8px 0" onclick="closeModal();recipeDetail('${r.id}')">
+   <div class="ric"><svg viewBox="0 0 32 32"><use href="#${r.ic}"/></svg></div>
+   <div><b style="font-size:12px;color:var(--ink2)">${MEALS[mk]}</b><div class="nm">${esc(r.n)}</div>
+   <div class="muted">${fmt(n[0])} กิโลแคลอรี</div></div></div>`});
+ h+=`<div class="row" style="margin-top:12px">
+  <button class="btn mint" style="flex:1" onclick="randomToPlan(${JSON.stringify(Object.fromEntries(Object.entries(sel).filter(([k,v])=>v).map(([k,v])=>[k,v.id]))).replace(/"/g,'&quot;')})">📌 ใส่ลงแผนวันนี้</button>
+  <button class="btn" onclick="randomMenu()">สุ่มใหม่</button></div>`;
+ openModal(h)}
+function randomToPlan(sel){const c=child();S.plans[c.id]=S.plans[c.id]||{};
+ S.plans[c.id][dstr()]=Object.assign(S.plans[c.id][dstr()]||{},sel);
+ save();closeModal();toast('ใส่ลงแผนแล้ว 📌');go('plan')}
+
+function recipeDetail(id){const r=getRecipe(id);if(!r)return;
+ const n=nutOf(r.ings),risk=recipeRisk(r),als=recipeAllergens(r);
+ const hist=S.logs.filter(l=>l.child===S.active&&l.rid===id).sort((a,b)=>b.date.localeCompare(a.date));
+ let h=`<h2>${esc(r.n)}</h2>
+  <div><span class="tag age">เหมาะกับ ${r.a[0]}–${r.a[1]} เดือน</span><span class="tag">เนื้อสัมผัส: ${esc(r.tx)}</span>
+  ${als.map(a=>`<span class="tag al">มี${a}</span>`).join('')}</div>
+  ${risk?`<div class="warnbox">⚠️ เมนูนี้มีวัตถุดิบที่ลูกเคยแพ้!</div>`:''}
+  ${r.tip?`<div class="okbox">💡 ${esc(r.tip)}</div>`:''}
+  <h4 class="sec">ส่วนประกอบ (1 ที่)</h4><div class="inglist card flat" style="margin:4px 0">`;
+ r.ings.forEach(([iid,g])=>{const it=ING[iid];if(it)h+=`<div class="it"><span>${it.n}${it.a?` <span class="tag al">${it.a}</span>`:''}</span><b>${g} ก.</b></div>`});
+ h+=`</div><h4 class="sec">สารอาหารที่ได้รับ (เต็มจาน)</h4><div class="card flat" style="margin:4px 0"><table class="nut">`;
+ NUTL.forEach(([k,nm,u],i)=>{h+=`<tr><td>${nm}</td><td>${fmt(n[i],1)} ${u}</td></tr>`});
+ h+=`</table></div>`;
+ if(r.steps){h+=`<h4 class="sec">วิธีทำ</h4><ol class="steps">${r.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>`}
+ if(hist.length)h+=`<h4 class="sec">เคยทำให้กิน ${hist.length} ครั้ง ล่าสุด ${thDate(hist[0].date)}</h4>`;
+ h+=`<div class="row" style="margin-top:12px">
+  <button class="btn pri" style="flex:1" onclick="closeModal();TODAY_DATE=dstr();logFromRecipe('${r.id}')">🍽️ บันทึกว่ากินมื้อนี้</button>
+  <button class="btn mint" onclick="addToPlanPicker('${r.id}')">📌 ใส่แผน</button></div>
+  ${r.id[0]==='u'?`<div class="row" style="margin-top:8px"><button class="btn sm" onclick="recipeForm('${r.id}')">✏️ แก้ไข</button><button class="btn sm" style="color:var(--red);border-color:var(--red)" onclick="delRecipe('${r.id}')">ลบเมนู</button></div>`:''}`;
+ openModal(h)}
+function logFromRecipe(rid){const h=new Date().getHours();
+ const mk=h<10?'br':h<14?'lu':h<17?'sn':'di';
+ logForm(mk);setTimeout(()=>{$('#lg-rec').value=rid;logPickRecipe()},50)}
+function delRecipe(id){if(!confirm('ลบเมนูนี้?'))return;S.recipes=S.recipes.filter(r=>r.id!==id);save();closeModal();renderMenu()}
+
+/* ===== เพิ่ม/แก้เมนูเอง ===== */
+function recipeForm(editId){const ed=editId?getRecipe(editId):null;
+ window._rIngs=ed?ed.ings.map(x=>[...x]):[['',0]];
+ openModal(`<h2>${ed?'แก้ไขเมนู':'เพิ่มเมนูของฉัน'}</h2>
+  <label class="fl">ชื่อเมนู</label><input id="rf-name" value="${ed?esc(ed.n):''}" placeholder="เช่น ข้าวตุ๋นปลาช่อน">
+  <div class="row"><div style="flex:1"><label class="fl">เหมาะตั้งแต่ (เดือน)</label><input id="rf-a0" type="number" min="6" max="36" value="${ed?ed.a[0]:12}"></div>
+  <div style="flex:1"><label class="fl">ถึง (เดือน)</label><input id="rf-a1" type="number" min="6" max="36" value="${ed?ed.a[1]:36}"></div></div>
+  <label class="fl">เนื้อสัมผัส</label>
+  <select id="rf-tx">${['บดละเอียด','บดหยาบ','สับหยาบ','นุ่มเป็นชิ้น','ฟิงเกอร์ฟู้ด','ข้าวนุ่ม','ของว่าง','ปกติหั่นเล็ก'].map(t=>`<option ${ed&&ed.tx===t?'selected':''}>${t}</option>`).join('')}</select>
+  <label class="fl">วัตถุดิบ + กรัม</label><div id="rf-ings"></div>
+  <button class="btn sm ghost" onclick="window._rIngs.push(['',0]);drawRIngs()">＋ เพิ่มวัตถุดิบ</button>
+  <button class="btn sm ghost" onclick="ingForm()">🆕 สร้างวัตถุดิบใหม่</button>
+  <div id="rf-nut" class="muted" style="margin-top:5px"></div>
+  <label class="fl">วิธีทำ (1 บรรทัดต่อ 1 ขั้นตอน)</label>
+  <textarea id="rf-steps" rows="4" placeholder="ต้มข้าวจนนุ่ม&#10;ใส่หมูสับ...">${ed&&ed.steps?esc(ed.steps.join('\n')):''}</textarea>
+  <button class="btn pri" style="width:100%;margin-top:13px" onclick="saveRecipe('${editId||''}')">💾 บันทึกเมนู</button>`);
+ drawRIngs()}
+function drawRIngs(){const el=$('#rf-ings');if(!el)return;
+ el.innerHTML=window._rIngs.map((ig,i)=>`<div class="ingrow">
+  <select onchange="window._rIngs[${i}][0]=this.value;drawRIngs()">${ingOptions(ig[0])}</select>
+  <input type="number" min="0" value="${ig[1]||''}" placeholder="กรัม" oninput="window._rIngs[${i}][1]=+this.value;updRNut()">
+  <button class="x" onclick="window._rIngs.splice(${i},1);drawRIngs()">✕</button></div>`).join('');updRNut()}
+function updRNut(){const el=$('#rf-nut');if(!el)return;const n=nutOf(window._rIngs.filter(x=>x[0]));
+ el.innerHTML=`รวม: <b>${fmt(n[0])} กิโลแคลอรี</b> · โปรตีน ${fmt(n[1],1)} ก. · เหล็ก ${fmt(n[4],1)} มก.`}
+function saveRecipe(editId){const n=$('#rf-name').value.trim();
+ if(!n){toast('ใส่ชื่อเมนูก่อนนะคะ');return}
+ const ings=window._rIngs.filter(x=>x[0]&&x[1]>0);
+ if(!ings.length){toast('เพิ่มวัตถุดิบอย่างน้อย 1 อย่าง');return}
+ const data={n,a:[+$('#rf-a0').value||6,+$('#rf-a1').value||36],tx:$('#rf-tx').value,ic:'i-star',ings,
+  steps:$('#rf-steps').value.split('\n').map(s=>s.trim()).filter(Boolean)};
+ if(editId){Object.assign(getRecipe(editId),data)}else S.recipes.push({id:'u'+uid(),...data});
+ save();closeModal();toast('บันทึกเมนูแล้ว ⭐');renderMenu()}
+
+/* ================= หน้า: แผนสัปดาห์ ================= */
+function renderPlan(){const c=child(),m=ageM();
+ const plans=S.plans[c.id]||{};
+ let h=`<div class="row between" style="margin-top:12px"><h3 style="margin:0">📅 แผนเมนู 7 วัน</h3>
+  <button class="btn mint sm" onclick="autoPlanWeek()">${svg('i-dice','width:15px;height:15px;vertical-align:-3px')} สุ่มทั้งสัปดาห์</button></div>
+  <p class="muted" style="margin:4px 2px">แตะช่องเพื่อเลือกเมนู · เมนูจะกรองตามวัย ${ageTxt(m)}</p>`;
+ for(let i=0;i<7;i++){const d=new Date();d.setDate(d.getDate()+i);const ds=dstr(d);
+  const p=plans[ds]||{};
+  h+=`<div class="card pday"><div class="dt">${i===0?'วันนี้':i===1?'พรุ่งนี้':''} ${thDate(ds)}</div><div class="pslot">`;
+  ['br','lu','di','sn'].forEach(mk=>{const r=p[mk]&&getRecipe(p[mk]);
+   h+=`<div class="ps ${r?'has':''}" onclick="planPick('${ds}','${mk}')"><b>${MEALS[mk]}</b>${r?esc(r.n):'<span class="muted">＋ เลือก</span>'}</div>`});
+  h+='</div></div>'}
+ $('#view').innerHTML=h}
+function autoPlanWeek(){const c=child(),m=ageM();
+ const pool=allRecipes().filter(r=>m>=r.a[0]&&m<=r.a[1]&&!recipeRisk(r));
+ const main=pool.filter(r=>r.tx!=='ของว่าง'),sn=pool.filter(r=>r.tx==='ของว่าง');
+ if(!main.length){toast('ยังไม่มีเมนูเหมาะกับวัยนี้');return}
+ S.plans[c.id]=S.plans[c.id]||{};
+ const pk=a=>a.length?a[Math.floor(Math.random()*a.length)].id:null;
+ for(let i=0;i<7;i++){const d=new Date();d.setDate(d.getDate()+i);
+  S.plans[c.id][dstr(d)]={br:pk(main),lu:pk(main),di:pk(main),sn:pk(sn.length?sn:main)}}
+ save();toast('จัดแผนให้แล้ว 🎉 ปรับแก้ได้ตามใจ');renderPlan()}
+function planPick(ds,mk){const m=ageM();
+ const list=allRecipes().filter(r=>m>=r.a[0]&&m<=r.a[1]).sort((a,b)=>a.n.localeCompare(b.n,'th'));
+ let h=`<h2>เลือกเมนู ${MEALS[mk]} · ${thDate(ds)}</h2>`;
+ h+=`<button class="btn sm ghost" style="margin-bottom:6px" onclick="setPlan('${ds}','${mk}','')">🗑️ ล้างช่องนี้</button>`;
+ list.forEach(r=>{const risk=recipeRisk(r);
+  h+=`<div class="card flat rcard" style="margin:7px 0" onclick="setPlan('${ds}','${mk}','${r.id}')">
+   <div class="ric" style="width:42px;height:42px;background:${risk?'#fde3e3':'var(--mint2)'}"><svg viewBox="0 0 32 32" style="width:26px;height:26px"><use href="#${r.ic}"/></svg></div>
+   <div><div class="nm" style="font-size:13.5px">${esc(r.n)}${risk?' ⚠️':''}</div><span class="muted">${r.a[0]}–${r.a[1]} ด. · ${esc(r.tx)}</span></div></div>`});
+ openModal(h)}
+function setPlan(ds,mk,rid){const c=child();S.plans[c.id]=S.plans[c.id]||{};
+ S.plans[c.id][ds]=S.plans[c.id][ds]||{};S.plans[c.id][ds][mk]=rid||null;
+ save();closeModal();renderPlan()}
+/* ================= หน้า: ลองอาหารใหม่ / ภูมิแพ้ ================= */
+function renderNewfood(){const c=child();
+ const ts=S.trials.filter(t=>t.child===c.id).sort((a,b)=>b.start.localeCompare(a.start));
+ const trying=ts.filter(t=>t.status==='try'),pass=ts.filter(t=>t.status==='pass'),fail=ts.filter(t=>t.status==='fail');
+ const dayOf=t=>Math.min(9,Math.floor((new Date(dstr()+'T00:00')-new Date(t.start+'T00:00'))/864e5)+1);
+ let h=`<div class="card" style="background:var(--sun2)"><h3>${svg('i-leaf','width:19px;color:var(--mint)')} กฎ 3 วัน</h3>
+  <p style="font-size:13px;margin:0">เริ่มอาหารใหม่<b>ทีละ 1 อย่าง</b> ให้ติดต่อกัน 3 วัน สังเกตผื่น อาเจียน ถ่ายเหลว หรือหายใจครืดคราด ถ้าปกติดีถือว่า "ผ่าน" แล้วค่อยเริ่มอย่างถัดไป ลองตอนมื้อเช้า/กลางวันจะสังเกตอาการได้ทั้งวัน</p></div>
+  <button class="btn pri" style="width:100%" onclick="trialForm()">＋ เริ่มลองอาหารใหม่</button>`;
+ if(trying.length){h+=`<h4 class="sec">🟡 กำลังลอง</h4><div class="card">`;
+  trying.forEach(t=>{const d=dayOf(t);
+   h+=`<div class="trow"><span class="dot try"></span><div style="flex:1"><b>${esc(t.name)}</b>
+    <div class="muted">วันที่ ${d} จาก 3 · เริ่ม ${thDate(t.start)}${t.note?` · 📝 ${esc(t.note)}`:''}</div></div>
+    <button class="btn sm mint" onclick="trialSet('${t.id}','pass')">ผ่าน ✓</button>
+    <button class="btn sm" style="color:var(--red);border-color:var(--red)" onclick="trialSet('${t.id}','fail')">มีอาการ</button></div>`});
+  h+='</div>'}
+ if(fail.length){h+=`<h4 class="sec">🔴 แพ้ / มีอาการ (${fail.length})</h4><div class="card">`;
+  fail.forEach(t=>{h+=`<div class="trow"><span class="dot fail"></span><div style="flex:1"><b>${esc(t.name)}</b>
+   <div class="muted">${t.note?esc(t.note):'บันทึกเมื่อ '+thDate(t.start)}</div></div>
+   <button class="btn sm ghost" onclick="trialSet('${t.id}','try')">ลองใหม่</button>
+   <button class="x" onclick="delTrial('${t.id}')">✕</button></div>`});
+  h+='</div>'}
+ if(pass.length){h+=`<h4 class="sec">🟢 ผ่านแล้ว กินได้ (${pass.length})</h4><div class="card">`;
+  pass.forEach(t=>{h+=`<div class="trow"><span class="dot pass"></span><div style="flex:1"><b>${esc(t.name)}</b>
+   <span class="muted"> · ${thDate(t.start)}</span></div><button class="x" onclick="delTrial('${t.id}')">✕</button></div>`});
+  h+='</div>'}
+ if(!ts.length)h+=`<div class="empty">${svg('i-leaf')}ยังไม่มีบันทึกการลองอาหารใหม่<br>เริ่มจดได้เลยค่ะ</div>`;
+ $('#view').innerHTML=h}
+function trialForm(){openModal(`<h2>เริ่มลองอาหารใหม่</h2>
+ <label class="fl">เลือกวัตถุดิบจากฐานข้อมูล</label>
+ <select id="tf-ing" onchange="if(this.value)document.getElementById('tf-name').value=this.options[this.selectedIndex].text.replace(' ⚠️','')">${ingOptions('')}</select>
+ <label class="fl">หรือพิมพ์ชื่ออาหารเอง</label>
+ <input id="tf-name" placeholder="เช่น แก้วมังกร, ปลาช่อน">
+ <label class="fl">วันที่เริ่ม</label>
+ <input id="tf-date" type="date" value="${dstr()}">
+ <button class="btn pri" style="width:100%;margin-top:13px" onclick="saveTrial()">เริ่มลอง 🌱</button>`)}
+function saveTrial(){const name=$('#tf-name').value.trim();
+ if(!name){toast('ใส่ชื่ออาหารก่อนนะคะ');return}
+ S.trials.push({id:uid(),child:S.active,name,ing:$('#tf-ing').value||null,start:$('#tf-date').value||dstr(),status:'try',note:''});
+ save();closeModal();toast('เริ่มลอง '+name+' 🌱');renderNewfood()}
+function trialSet(id,st){const t=S.trials.find(x=>x.id===id);if(!t)return;
+ if(st==='fail'){const sym=prompt('อาการที่พบ (เช่น ผื่นรอบปาก, ถ่ายเหลว)');if(sym===null)return;t.note=sym||t.note}
+ t.status=st;save();
+ toast(st==='pass'?'เยี่ยม! เพิ่มในรายการกินได้ 🟢':st==='fail'?'จดไว้แล้ว ระบบจะเตือนเมื่อเมนูมีของที่แพ้':'เริ่มลองใหม่');
+ renderNewfood()}
+function delTrial(id){if(!confirm('ลบรายการนี้?'))return;S.trials=S.trials.filter(t=>t.id!==id);save();renderNewfood()}
+
+/* ================= หน้า: สรุป ================= */
+let STAT_MONTH=dstr().slice(0,7);
+function renderStats(){const c=child(),t=target();
+ const [y,mo]=STAT_MONTH.split('-').map(Number);
+ const dim=new Date(y,mo,0).getDate();
+ const logs=S.logs.filter(l=>l.child===c.id&&l.date.startsWith(STAT_MONTH));
+ const byDay={};logs.forEach(l=>{(byDay[l.date]=byDay[l.date]||[]).push(l)});
+ const days=Object.keys(byDay).length;
+ let sumK=0,sumP=0,sumFe=0,sumCa=0;const dayK={};
+ logs.forEach(l=>{const n=nutOf(l.ings),e=l.eaten??1;
+  sumK+=n[0]*e;sumP+=n[1]*e;sumFe+=n[4]*e;sumCa+=n[5]*e;
+  dayK[l.date]=(dayK[l.date]||0)+n[0]*e});
+ const top={};logs.forEach(l=>top[l.name]=(top[l.name]||0)+1);
+ const tops=Object.entries(top).sort((a,b)=>b[1]-a[1]).slice(0,5);
+ const reacts=logs.filter(l=>l.react);
+ const prevM=()=>{const d=new Date(y,mo-2,1);STAT_MONTH=dstr(d).slice(0,7);renderStats()};
+ const nextM=()=>{const d=new Date(y,mo,1);STAT_MONTH=dstr(d).slice(0,7);renderStats()};
+ window._pm=prevM;window._nm=nextM;
+ let h=`<div class="row between" style="margin-top:10px">
+  <button class="btn sm ghost" onclick="_pm()">‹</button><b>📊 ${THM[mo-1]} ${y+543}</b>
+  <button class="btn sm ghost" onclick="_nm()" ${STAT_MONTH>=dstr().slice(0,7)?'disabled':''}>›</button></div>`;
+ h+=`<div class="card"><div class="kpis">
+  <div class="kpi"><b>${days}</b><span>วันที่มีบันทึก</span></div>
+  <div class="kpi"><b>${logs.length}</b><span>มื้อที่บันทึก</span></div>
+  <div class="kpi"><b>${days?fmt(sumK/days):0}</b><span>กิโลแคลอรีเฉลี่ย/วัน</span></div>
+  <div class="kpi"><b>${days?fmt(sumP/days,1):0}</b><span>โปรตีนเฉลี่ย (ก./วัน)</span></div>
+  <div class="kpi"><b>${days?fmt(sumFe/days,1):0}</b><span>เหล็กเฉลี่ย (มก./วัน)</span></div>
+  <div class="kpi"><b>${days?fmt(sumCa/days):0}</b><span>แคลเซียมเฉลี่ย (มก./วัน)</span></div>
+ </div></div>`;
+ // กราฟแคลอรีรายวัน
+ h+=`<div class="card"><h3>${svg('i-chart','width:19px;color:var(--coral)')} พลังงานรายวัน <span class="muted" style="font-size:11px;font-weight:400">เส้นเป้า ${fmt(t.kcal)} กิโลแคลอรี</span></h3><div class="mchart">`;
+ const mx=Math.max(t.kcal*1.2,...Object.values(dayK),1);
+ for(let d=1;d<=dim;d++){const ds=STAT_MONTH+'-'+String(d).padStart(2,'0');const k=dayK[ds]||0;
+  h+=`<i class="${k<t.kcal*.7?'lo':''}" style="height:${Math.max(2,k/mx*100)}%" title="${d}: ${fmt(k)} kcal" onclick="TODAY_DATE='${ds}';go('today')"></i>`}
+ h+=`</div><div class="row between muted" style="font-size:10px"><span>1</span><span>${dim} ${THM[mo-1]}</span></div>
+ <div class="muted" style="font-size:11px;margin-top:3px">🟠 = ต่ำกว่า 70% ของเป้า · แตะแท่งเพื่อดูรายวัน</div></div>`;
+ if(tops.length){h+=`<div class="card"><h3>${svg('i-star','width:19px;color:var(--sun)')} เมนูยอดฮิตเดือนนี้</h3>`;
+  tops.forEach(([n,c2],i)=>{h+=`<div class="row between" style="padding:4px 0;border-bottom:1px dashed #ecdfca"><span>${['🥇','🥈','🥉','4.','5.'][i]} ${esc(n)}</span><b>${c2} ครั้ง</b></div>`});
+  h+='</div>'}
+ if(reacts.length){h+=`<div class="card" style="border-color:var(--red)"><h3 style="color:var(--red)">⚠️ อาการผิดปกติเดือนนี้</h3>`;
+  reacts.forEach(l=>{h+=`<div style="font-size:13px;padding:3px 0">${thDate(l.date)} · <b>${esc(l.name)}</b> — ${esc(l.react)}</div>`});
+  h+='</div>'}
+ if(!logs.length)h+=`<div class="empty">${svg('i-chart')}เดือนนี้ยังไม่มีบันทึก</div>`;
+ $('#view').innerHTML=h}
+
+/* ================= หน้า: เติบโต (น้ำหนัก/ส่วนสูง เทียบ WHO) =================
+   ตาราง LMS อ้างอิง WHO Child Growth Standards 2006, อายุ 0–36 เดือน
+   น้ำหนัก: [L, M, S] · ความยาว/ส่วนสูง: [M, S] (L=1)
+   หมายเหตุ: <24 เดือนวัดความยาวท่านอน, ≥24 เดือนวัดส่วนสูงท่ายืน */
+const WFA_M=[[.3487,3.346,.1460],[.2297,4.471,.1340],[.1970,5.568,.1239],[.1738,6.376,.1173],[.1553,7.002,.1132],[.1395,7.510,.1108],[.1257,7.934,.1096],[.1134,8.297,.1090],[.1021,8.615,.1088],[.0917,8.901,.1088],[.0820,9.165,.1089],[.0730,9.412,.1091],[.0644,9.648,.1093],[.0563,9.875,.1095],[.0487,10.095,.1098],[.0413,10.311,.1101],[.0343,10.523,.1104],[.0275,10.732,.1108],[.0211,10.938,.1112],[.0148,11.143,.1116],[.0087,11.346,.1121],[.0029,11.549,.1126],[-.0028,11.750,.1131],[-.0083,11.951,.1137],[-.0137,12.152,.1143],[-.0189,12.350,.1149],[-.0240,12.547,.1154],[-.0289,12.740,.1160],[-.0337,12.930,.1166],[-.0385,13.117,.1172],[-.0431,13.300,.1178],[-.0476,13.480,.1184],[-.0520,13.657,.1190],[-.0564,13.831,.1195],[-.0606,14.003,.1201],[-.0648,14.174,.1206],[-.0689,14.343,.1212]];
+const WFA_F=[[.3809,3.232,.1417],[.1714,4.187,.1372],[.0962,5.128,.1300],[.0402,5.846,.1262],[-.0050,6.424,.1240],[-.0430,6.899,.1227],[-.0756,7.297,.1220],[-.1039,7.642,.1218],[-.1288,7.949,.1218],[-.1507,8.225,.1220],[-.1700,8.480,.1222],[-.1872,8.719,.1225],[-.2024,8.948,.1227],[-.2158,9.170,.1228],[-.2278,9.387,.1229],[-.2384,9.601,.1230],[-.2478,9.812,.1230],[-.2562,10.023,.1231],[-.2637,10.232,.1231],[-.2703,10.439,.1232],[-.2762,10.646,.1232],[-.2815,10.853,.1234],[-.2862,11.061,.1235],[-.2903,11.269,.1237],[-.2941,11.478,.1239],[-.2975,11.686,.1241],[-.3005,11.895,.1244],[-.3032,12.102,.1247],[-.3057,12.306,.1251],[-.3080,12.507,.1255],[-.3101,12.706,.1259],[-.3120,12.901,.1263],[-.3138,13.093,.1268],[-.3155,13.284,.1274],[-.3171,13.473,.1279],[-.3186,13.662,.1286],[-.3201,13.850,.1292]];
+const HFA_M=[[49.88,.0380],[54.72,.0356],[58.42,.0342],[61.43,.0333],[63.89,.0326],[65.90,.0320],[67.62,.0317],[69.16,.0314],[70.60,.0312],[71.97,.0312],[73.28,.0312],[74.54,.0313],[75.75,.0314],[76.92,.0315],[78.05,.0317],[79.15,.0320],[80.21,.0322],[81.25,.0325],[82.26,.0328],[83.24,.0331],[84.20,.0334],[85.13,.0338],[86.05,.0341],[86.94,.0345],[87.12,.0350],[87.97,.0352],[88.81,.0354],[89.62,.0356],[90.41,.0358],[91.18,.0360],[91.93,.0362],[92.66,.0364],[93.38,.0366],[94.07,.0368],[94.75,.0369],[95.42,.0371],[96.08,.0373]];
+const HFA_F=[[49.15,.0379],[53.69,.0364],[57.07,.0357],[59.80,.0352],[62.09,.0349],[64.03,.0346],[65.73,.0345],[67.29,.0344],[68.75,.0344],[70.14,.0344],[71.48,.0345],[72.77,.0346],[74.02,.0348],[75.22,.0350],[76.38,.0351],[77.51,.0353],[78.61,.0356],[79.67,.0358],[80.71,.0360],[81.72,.0362],[82.70,.0364],[83.67,.0367],[84.60,.0369],[85.52,.0371],[85.72,.0376],[86.59,.0378],[87.45,.0380],[88.28,.0381],[89.10,.0383],[89.90,.0384],[90.68,.0386],[91.44,.0387],[92.19,.0389],[92.92,.0390],[93.64,.0391],[94.35,.0392],[95.05,.0394]];
+function lmsAt(arr,m){m=Math.max(0,Math.min(36,m));const i=Math.floor(m),f=m-i,a=arr[i],b=arr[Math.min(36,i+1)];
+ if(a.length===3)return[a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f,a[2]+(b[2]-a[2])*f];
+ return[1,a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f]}
+function zscore(x,[L,M,S]){return Math.abs(L)>1e-4?(Math.pow(x/M,L)-1)/(L*S):Math.log(x/M)/S}
+function fromZ(z,[L,M,S]){return Math.abs(L)>1e-4?M*Math.pow(1+L*S*z,1/L):M*Math.exp(S*z)}
+function ncdf(z){const t=1/(1+.2316419*Math.abs(z)),d=.3989423*Math.exp(-z*z/2);
+ const p=d*t*(.3193815+t*(-.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));return z>0?1-p:p}
+function ageAtM(c,date){return (new Date(date+'T00:00')-new Date(c.bd+'T00:00'))/864e5/30.4375}
+function pctOf(c,date,val,type){const m=ageAtM(c,date);if(m<0||m>37||!val)return null;
+ const tab=type==='w'?(c.sex==='f'?WFA_F:WFA_M):(c.sex==='f'?HFA_F:HFA_M);
+ const z=zscore(val,lmsAt(tab,m));return{z,p:ncdf(z)*100,m}}
+function pLabel(p){return p<1?'<P1':p>99?'>P99':'P'+Math.round(p)}
+function interp(p,type){const w=type==='w';
+ if(p<3)return[w?'น้อยกว่าเกณฑ์':'เตี้ยกว่าเกณฑ์','#fde3e3','var(--red)'];
+ if(p<15)return[w?'ค่อนข้างน้อย':'ค่อนข้างเตี้ย','var(--sun2)','var(--ink)'];
+ if(p<=85)return[w?'น้ำหนักตามเกณฑ์':'สูงตามเกณฑ์','var(--mint2)','var(--ink)'];
+ if(p<=97)return[w?'ค่อนข้างมาก':'ค่อนข้างสูง','var(--sun2)','var(--ink)'];
+ return[w?'มากกว่าเกณฑ์':'สูงกว่าเกณฑ์มาก','#fde3e3','var(--red)']}
+
+function growChart(c,recs,type){
+ const tab=type==='w'?(c.sex==='f'?WFA_F:WFA_M):(c.sex==='f'?HFA_F:HFA_M);
+ const y0=type==='w'?2:44,y1=type==='w'?20:104;
+ const W=340,H=205,pl=30,pr=27,pt=10,pb=20;
+ const X=m=>pl+m/36*(W-pl-pr),Y=v=>pt+(1-(v-y0)/(y1-y0))*(H-pt-pb);
+ let s=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;display:block">`;
+ // เส้นกริดแนวนอน
+ const step=type==='w'?3:10,gs=Math.ceil(y0/step)*step;
+ for(let v=gs;v<=y1;v+=step)s+=`<line x1="${pl}" y1="${Y(v)}" x2="${W-pr}" y2="${Y(v)}" stroke="#efe3d0" stroke-width="1"/><text x="${pl-4}" y="${Y(v)+3}" font-size="8" fill="#9a8270" text-anchor="end">${v}</text>`;
+ for(let m=0;m<=36;m+=6)s+=`<text x="${X(m)}" y="${H-6}" font-size="8" fill="#9a8270" text-anchor="middle">${m}</text>`;
+ s+=`<text x="${W-pr}" y="${H-6}" font-size="7.5" fill="#9a8270" text-anchor="end" dx="12">ด.</text>`;
+ // เส้นโค้งเปอร์เซ็นไทล์
+ [[-1.8808,'P3'],[-1.0364,'P15'],[0,'P50'],[1.0364,'P85'],[1.8808,'P97']].forEach(([z,lb])=>{
+  let d='';for(let m=0;m<=36;m++)d+=(m?'L':'M')+X(m).toFixed(1)+' '+Y(fromZ(z,lmsAt(tab,m))).toFixed(1);
+  s+=`<path d="${d}" fill="none" stroke="${z===0?'var(--mint)':'#d8c7ab'}" stroke-width="${z===0?2:1.1}" ${Math.abs(z)>1.5?'stroke-dasharray="3 3"':''}/>`;
+  s+=`<text x="${W-pr+2}" y="${Y(fromZ(z,lmsAt(tab,36)))+3}" font-size="7.5" fill="${z===0?'var(--mint)':'#b39f85'}">${lb}</text>`});
+ // จุดของลูก
+ const pts=recs.map(r=>({m:ageAtM(c,r.date),v:r[type]})).filter(p=>p.v&&p.m>=0&&p.m<=36.8);
+ if(pts.length>1)s+=`<polyline points="${pts.map(p=>X(Math.min(36,p.m)).toFixed(1)+','+Y(p.v).toFixed(1)).join(' ')}" fill="none" stroke="var(--coral)" stroke-width="2"/>`;
+ pts.forEach(p=>s+=`<circle cx="${X(Math.min(36,p.m)).toFixed(1)}" cy="${Y(p.v).toFixed(1)}" r="3.4" fill="var(--coral)" stroke="#fff" stroke-width="1.4"/>`);
+ return s+'</svg>'}
+
+function renderGrow(){const c=child();
+ if(!c.sex){$('#view').innerHTML=`<div class="card" style="text-align:center;padding:24px 16px">
+   <svg viewBox="0 0 32 32" style="width:60px;height:60px;color:var(--mint)"><use href="#i-grow"/></svg>
+   <h3 style="justify-content:center">ระบุเพศของ ${esc(c.name)} ก่อนนะคะ</h3>
+   <p class="muted">เพื่อเทียบกับกราฟมาตรฐานการเติบโตที่ถูกต้อง</p>
+   <div class="row" style="justify-content:center">
+    <button class="btn pri" onclick="setSex('m')">👦 ชาย</button>
+    <button class="btn pri" style="background:var(--berry)" onclick="setSex('f')">👧 หญิง</button></div></div>`;return}
+ const recs=S.growth.filter(g=>g.child===c.id).sort((a,b)=>a.date.localeCompare(b.date));
+ const lw=[...recs].reverse().find(r=>r.w),lh=[...recs].reverse().find(r=>r.h);
+ let h=`<div style="margin-top:10px"><button class="btn pri" style="width:100%" onclick="growForm()">＋ บันทึกน้ำหนัก/ส่วนสูง</button></div>`;
+ // สรุปล่าสุด
+ if(lw||lh){h+=`<div class="card"><h3>${svg('i-grow','width:19px;color:var(--mint)')} ล่าสุดของ ${esc(c.name)} (${c.sex==='f'?'หญิง':'ชาย'} · ${ageTxt(ageM(c))})</h3><div class="kpis">`;
+  if(lw){const r=pctOf(c,lw.date,lw.w,'w');if(r){const[t,bg,cl]=interp(r.p,'w');
+   h+=`<div class="kpi" style="background:${bg}"><b>${lw.w} กก.</b><span>น้ำหนัก · <b style="color:${cl}">${pLabel(r.p)}</b><br>${t}</span></div>`}}
+  if(lh){const r=pctOf(c,lh.date,lh.h,'h');if(r){const[t,bg,cl]=interp(r.p,'h');
+   h+=`<div class="kpi" style="background:${bg}"><b>${lh.h} ซม.</b><span>ส่วนสูง · <b style="color:${cl}">${pLabel(r.p)}</b><br>${t}</span></div>`}}
+  h+=`</div><div class="muted" style="font-size:11px;margin-top:6px">เปอร์เซ็นไทล์ เช่น P65 = สูง/หนักกว่าเด็กวัยเดียวกัน 65 จาก 100 คน · ช่วง P15–P85 คือตามเกณฑ์ปกติ</div></div>`}
+ // กราฟ
+ h+=`<div class="card"><h3>⚖️ น้ำหนักตามอายุ <span class="muted" style="font-size:11px;font-weight:400">(กก.)</span></h3>${growChart(c,recs,'w')}</div>`;
+ h+=`<div class="card"><h3>📏 ส่วนสูงตามอายุ <span class="muted" style="font-size:11px;font-weight:400">(ซม.)</span></h3>${growChart(c,recs,'h')}
+  <div class="muted" style="font-size:11px;margin-top:4px">ต่ำกว่า 2 ขวบวัดความยาวท่านอน · 2 ขวบขึ้นไปวัดท่ายืน (เส้นมาตรฐานขยับเล็กน้อยที่ 2 ขวบ)</div></div>`;
+ // ประวัติ
+ if(recs.length){h+=`<div class="card"><h3>📒 ประวัติการวัด</h3>`;
+  [...recs].reverse().forEach(r=>{const rw=r.w?pctOf(c,r.date,r.w,'w'):null,rh=r.h?pctOf(c,r.date,r.h,'h'):null;
+   h+=`<div class="trow"><div style="flex:1"><b>${thDate(r.date)}</b> <span class="muted">(${ageTxt(Math.floor(Math.max(0,ageAtM(c,r.date))))})</span>
+    <div class="muted">${r.w?`⚖️ ${r.w} กก. <b>${rw?pLabel(rw.p):''}</b>`:''} ${r.w&&r.h?' · ':''} ${r.h?`📏 ${r.h} ซม. <b>${rh?pLabel(rh.p):''}</b>`:''}</div></div>
+    <button class="btn sm" onclick="growForm('${r.id}')">✏️</button><button class="x" onclick="delGrow('${r.id}')">✕</button></div>`});
+  h+='</div>'}
+ else h+=`<div class="empty">${svg('i-grow')}ยังไม่มีบันทึกการวัด<br>ชั่งน้ำหนัก-วัดส่วนสูงแล้วมาจดกันค่ะ</div>`;
+ h+=`<p class="muted" style="font-size:10.5px;padding:0 4px">อ้างอิง WHO Child Growth Standards 2006 (ค่าโดยประมาณ) · ใช้เพื่อติดตามแนวโน้ม หากกังวลเรื่องการเจริญเติบโตควรปรึกษากุมารแพทย์</p>`;
+ $('#view').innerHTML=h}
+function setSex(s){child().sex=s;save();renderGrow()}
+function growForm(editId){const ed=editId?S.growth.find(g=>g.id===editId):null;
+ openModal(`<h2>${ed?'แก้ไขบันทึกการวัด':'บันทึกน้ำหนัก/ส่วนสูง'}</h2>
+  <label class="fl">วันที่วัด</label><input id="gf-date" type="date" value="${ed?ed.date:dstr()}" max="${dstr()}" onchange="updGrowPrev()">
+  <label class="fl">น้ำหนัก (กก.)</label><input id="gf-w" type="number" step="0.01" min="1" max="35" value="${ed&&ed.w?ed.w:''}" placeholder="เช่น 9.45" oninput="updGrowPrev()">
+  <label class="fl">ส่วนสูง/ความยาว (ซม.)</label><input id="gf-h" type="number" step="0.1" min="40" max="120" value="${ed&&ed.h?ed.h:''}" placeholder="เช่น 74.5" oninput="updGrowPrev()">
+  <div id="gf-prev"></div>
+  <button class="btn pri" style="width:100%;margin-top:13px" onclick="saveGrow('${editId||''}')">💾 บันทึก</button>`);
+ updGrowPrev()}
+function updGrowPrev(){const el=$('#gf-prev');if(!el)return;const c=child();
+ const date=$('#gf-date').value,w=+$('#gf-w').value,h2=+$('#gf-h').value;let t='';
+ if(w){const r=pctOf(c,date,w,'w');if(r)t+=`<div class="okbox" style="background:${interp(r.p,'w')[1]}">⚖️ น้ำหนัก <b>${pLabel(r.p)}</b> · ${interp(r.p,'w')[0]} (z=${r.z.toFixed(1)})</div>`}
+ if(h2){const r=pctOf(c,date,h2,'h');if(r)t+=`<div class="okbox" style="background:${interp(r.p,'h')[1]}">📏 ส่วนสูง <b>${pLabel(r.p)}</b> · ${interp(r.p,'h')[0]} (z=${r.z.toFixed(1)})</div>`}
+ el.innerHTML=t}
+function saveGrow(editId){const date=$('#gf-date').value,w=+$('#gf-w').value||null,h=+$('#gf-h').value||null;
+ if(!date||(!w&&!h)){toast('ใส่วันที่และน้ำหนักหรือส่วนสูงอย่างน้อย 1 อย่าง');return}
+ if(editId)Object.assign(S.growth.find(g=>g.id===editId),{date,w,h});
+ else S.growth.push({id:uid(),child:S.active,date,w,h});
+ save();closeModal();toast('บันทึกแล้ว 🌱');renderGrow()}
+function delGrow(id){if(!confirm('ลบบันทึกนี้?'))return;S.growth=S.growth.filter(g=>g.id!==id);save();renderGrow()}
+
+/* ================= ตั้งค่า / ลูก / ข้อมูล ================= */
+function openSettings(){let h=`<h2>⚙️ ตั้งค่า</h2><h4 class="sec">ลูกน้อย</h4>`;
+ S.children.forEach(c=>{h+=`<div class="card flat row between" style="margin:6px 0">
+  <div><b>👶 ${esc(c.name)}</b><div class="muted">เกิด ${thDate(c.bd)} · ${ageTxt(ageM(c))}</div></div>
+  <div><button class="btn sm" onclick="addChildForm('${c.id}')">✏️</button>
+  <button class="btn sm" style="color:var(--red);border-color:var(--red)" onclick="delChild('${c.id}')">ลบ</button></div></div>`});
+ h+=`<button class="btn sun sm" onclick="addChildForm()">＋ เพิ่มลูก</button>
+ <h4 class="sec">ข้อมูล</h4>
+ <div class="row">
+  <button class="btn sm mint" onclick="exportData()">⬇️ สำรองข้อมูล (ไฟล์)</button>
+  <button class="btn sm" onclick="document.getElementById('impfile').click()">⬆️ กู้คืนข้อมูล</button>
+ </div>
+ <input type="file" id="impfile" accept=".json" style="display:none" onchange="importData(this)">
+ <p class="muted" style="font-size:11.5px">ข้อมูลทั้งหมดเก็บในเครื่องนี้เท่านั้น แนะนำสำรองเป็นไฟล์เป็นระยะ</p>
+ <h4 class="sec">วิธีติดตั้งเป็นแอป</h4>
+ <p class="muted" style="font-size:12.5px">เปิดไฟล์นี้ด้วย Chrome บนมือถือ → เมนู ⋮ มุมขวาบน → "เพิ่มลงในหน้าจอหลัก" จะได้ไอคอนแอปบนหน้าจอ เปิดใช้ได้เหมือนแอปทั่วไป ไม่ต้องใช้เน็ต</p>
+ <p class="muted" style="font-size:11px">⚕️ ข้อมูลโภชนาการเป็นค่าประมาณเพื่อการวางแผน ไม่ใช่คำแนะนำทางการแพทย์ หากสงสัยภาวะแพ้รุนแรงหรือการเจริญเติบโต ปรึกษากุมารแพทย์</p>`;
+ openModal(h)}
+function addChildForm(editId){const ed=editId?S.children.find(c=>c.id===editId):null;
+ openModal(`<h2>${ed?'แก้ไขข้อมูลลูก':'เพิ่มลูกน้อย'}</h2>
+ <label class="fl">ชื่อเล่น</label><input id="cf-name" value="${ed?esc(ed.name):''}" placeholder="เช่น น้องไอยู">
+ <label class="fl">วันเกิด</label><input id="cf-bd" type="date" value="${ed?ed.bd:''}" max="${dstr()}">
+ <label class="fl">เพศ (ใช้เทียบกราฟมาตรฐานการเติบโต)</label>
+ <div class="seg" id="cf-sex">
+  <button data-v="m" class="${ed&&ed.sex==='m'?'on':''}" onclick="segSel(this)">👦 ชาย</button>
+  <button data-v="f" class="${ed&&ed.sex==='f'?'on':''}" onclick="segSel(this)">👧 หญิง</button></div>
+ <label class="fl">สิ่งที่แพ้ที่ทราบอยู่แล้ว (คั่นด้วยจุลภาค ปล่อยว่างได้)</label>
+ <input id="cf-al" value="${ed?esc((ed.allergies||[]).join(', ')):''}" placeholder="เช่น ไข่, นมวัว">
+ <button class="btn pri" style="width:100%;margin-top:13px" onclick="saveChild('${editId||''}')">💾 บันทึก</button>`)}
+function saveChild(editId){const name=$('#cf-name').value.trim(),bd=$('#cf-bd').value;
+ if(!name||!bd){toast('ใส่ชื่อและวันเกิดก่อนนะคะ');return}
+ const al=$('#cf-al').value.split(',').map(s=>s.trim()).filter(Boolean);
+ const sex=$('#cf-sex .on')?.dataset.v||null;
+ if(editId){Object.assign(S.children.find(c=>c.id===editId),{name,bd,allergies:al,sex})}
+ else{const id=uid();S.children.push({id,name,bd,allergies:al,sex});S.active=id}
+ save();closeModal();toast('บันทึกแล้ว 👶');renderAll()}
+function delChild(id){if(!confirm('ลบข้อมูลลูกคนนี้ รวมบันทึกทั้งหมด?'))return;
+ S.children=S.children.filter(c=>c.id!==id);S.logs=S.logs.filter(l=>l.child!==id);
+ S.trials=S.trials.filter(t=>t.child!==id);delete S.plans[id];
+ if(S.active===id)S.active=S.children[0]?.id||null;
+ save();closeModal();renderAll()}
+function exportData(){const b=new Blob([JSON.stringify(S,null,1)],{type:'application/json'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(b);
+ a.download='เมนูหนูน้อย-สำรอง-'+dstr()+'.json';a.click();toast('ดาวน์โหลดไฟล์สำรองแล้ว')}
+function importData(inp){const f=inp.files[0];if(!f)return;
+ const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);
+  if(!d.children)throw 0;S=d;load2();save();closeModal();toast('กู้คืนข้อมูลสำเร็จ ✓');renderAll()}
+  catch(e){toast('ไฟล์ไม่ถูกต้อง')}};r.readAsText(f)}
+function load2(){S.recipes=S.recipes||[];S.trials=S.trials||[];S.plans=S.plans||{};S.logs=S.logs||[];S.growth=S.growth||[];S.ings=S.ings||[];mergeIngs()}
+function addToPlanPicker(rid){let h=`<h2>ใส่แผนวันไหน?</h2>`;
+ for(let i=0;i<7;i++){const d=new Date();d.setDate(d.getDate()+i);const ds=dstr(d);
+  h+=`<div class="row" style="margin:7px 0"><b style="width:90px;font-size:13px">${i===0?'วันนี้':thDate(ds)}</b>`;
+  ['br','lu','di','sn'].forEach(mk=>{h+=`<button class="btn sm" onclick="setPlan('${ds}','${mk}','${rid}');toast('ใส่แผนแล้ว 📌')">${MEALS[mk]}</button>`});
+  h+='</div>'}
+ openModal(h)}
+
+/* ================= เริ่มต้น ================= */
+load();renderAll();
+/*v2*/
+if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0){navigator.serviceWorker.register('./sw.js')}
+</script>
+</body>
+</html>
