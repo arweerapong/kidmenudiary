@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#FF8A65">
 <link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="เมนูหนูน้อย">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>เมนูหนูน้อย 🍚</title>
@@ -80,10 +83,10 @@ nav button.on svg{stroke-width:2.4}
 /* modal */
 .mwrap{position:fixed;inset:0;background:rgba(70,50,35,.45);z-index:50;display:none;align-items:flex-end;justify-content:center}
 .mwrap.show{display:flex}
-.modal{background:var(--bg);width:100%;max-width:520px;max-height:88vh;overflow-y:auto;border-radius:26px 26px 0 0;border:2.5px solid var(--ink);border-bottom:none;padding:16px 16px 28px;animation:up .22s ease}
+.modal{background:var(--bg);width:100%;max-width:520px;max-height:88vh;overflow-y:auto;border-radius:26px 26px 0 0;border:2.5px solid var(--ink);border-bottom:none;padding:16px 16px 28px;animation:up .22s ease;position:relative}
 @keyframes up{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
 .modal h2{font-size:18px;margin:2px 36px 10px 2px}
-.mclose{position:absolute;margin-left:auto;float:right;width:34px;height:34px;border-radius:50%;border:2px solid var(--ink);background:#fff;font-size:16px;cursor:pointer;font-family:inherit}
+.mclose{position:absolute;top:12px;right:14px;width:34px;height:34px;border-radius:50%;border:2px solid var(--ink);background:#fff;font-size:16px;cursor:pointer;font-family:inherit;z-index:2}
 /* tables */
 table.nut{width:100%;border-collapse:collapse;font-size:12.5px}
 table.nut td{padding:3px 4px;border-bottom:1px dashed #e8d9c5}
@@ -158,8 +161,9 @@ h4.sec{margin:16px 2px 6px;font-size:14px;color:var(--ink2)}
 <div class="app">
 <header>
   <svg class="logo" viewBox="0 0 32 32" style="color:var(--coral)"><use href="#i-bowl"/></svg>
-  <h1>เมนูหนูน้อย<small>บันทึก & คิดเมนูสำหรับลูกรัก 6 เดือน – 3 ขวบ</small></h1>
-  <button class="iconbtn" onclick="openSettings()" title="ตั้งค่า"><svg viewBox="0 0 32 32"><use href="#i-gear"/></svg></button>
+  <h1>เมนูหนูน้อย<small>บันทึก & คิดเมนูสำหรับลูกรัก 6 เดือน – 3 ขวบ · v1.4</small></h1>
+  <button class="iconbtn" onclick="toggleLang()" id="langbtn" title="Language" style="font-size:11.5px;font-weight:700">EN</button>
+  <button class="iconbtn" onclick="openSettings()" title="Settings"><svg viewBox="0 0 32 32"><use href="#i-gear"/></svg></button>
 </header>
 <div id="childbar" style="padding:9px 2px 0;display:flex;gap:6px;flex-wrap:wrap"></div>
 <main id="view"></main>
@@ -280,7 +284,7 @@ function thDate(s){const d=new Date(s+'T00:00');return THD[d.getDay()]+'. '+d.ge
 let S;
 function load(){try{S=JSON.parse(localStorage.getItem('kidmenu'))}catch(e){}
  if(!S)S={children:[],active:null,logs:[],recipes:[],trials:[],plans:{},growth:[]};
- S.recipes=S.recipes||[];S.trials=S.trials||[];S.plans=S.plans||{};S.logs=S.logs||[];S.growth=S.growth||[];S.ings=S.ings||[];mergeIngs();}
+ S.recipes=S.recipes||[];S.trials=S.trials||[];S.plans=S.plans||{};S.logs=S.logs||[];S.growth=S.growth||[];S.ings=S.ings||[];LANG=S.lang||'th';mergeIngs();}
 function save(){localStorage.setItem('kidmenu',JSON.stringify(S))}
 function child(){return S.children.find(c=>c.id===S.active)}
 function ageM(c){c=c||child();if(!c)return 12;const b=new Date(c.bd+'T00:00'),n=new Date();
@@ -299,7 +303,7 @@ function failedAllergens(){const c=child();if(!c)return[];
 function recipeAllergens(r){return [...new Set(r.ings.map(([id])=>ING[id]?.a).filter(Boolean))]}
 function recipeRisk(r){const bad=failedAllergens();
  return r.ings.some(([id])=>{const it=ING[id];return it&&(bad.includes(it.a)||bad.includes(it.n))})}
-function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2200)}
+function toast(m){const t=$('#toast');t.textContent=typeof trStr==='function'?trStr(m):m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2200)}
 function fmt(n,d=0){return Number(n).toLocaleString('th-TH',{maximumFractionDigits:d,minimumFractionDigits:0})}
 function svg(id,st){return `<svg viewBox="0 0 32 32" ${st?`style="${st}"`:''}><use href="#${id}"/></svg>`}
 function ingOptions(sel){let h='<option value="">– เลือกวัตถุดิบ –</option>';const gs={};
@@ -352,7 +356,7 @@ function saveIng(editId){const n=$('#if-n').value.trim();
 function delIng(id){
  const used=allRecipes().some(r=>r.ings.some(x=>x[0]===id))||S.logs.some(l=>(l.ings||[]).some(x=>x[0]===id));
  if(used){toast('ลบไม่ได้ มีเมนูหรือบันทึกที่ใช้วัตถุดิบนี้อยู่');return}
- if(!confirm('ลบวัตถุดิบนี้?'))return;
+ if(!confirm(trStr('ลบวัตถุดิบนี้?')))return;
  S.ings=S.ings.filter(x=>x.id!==id);delete ING[id];save();ingManager()}
 
 /* ================= แถบเลือกลูก ================= */
@@ -485,20 +489,20 @@ function saveLog(mk,editId){const name=$('#lg-name').value.trim();
   S.trials.filter(t=>t.child===S.active&&t.status==='try').forEach(t=>{
    if(ings.some(([id])=>id===t.ing)){t.note=(t.note?t.note+' | ':'')+TODAY_DATE+': '+data.react}})}
  save();closeModal();toast('บันทึกเรียบร้อย 🎉');renderToday()}
-function delLog(id){if(!confirm('ลบบันทึกนี้?'))return;S.logs=S.logs.filter(l=>l.id!==id);save();closeModal();renderToday()}
+function delLog(id){if(!confirm(trStr('ลบบันทึกนี้?')))return;S.logs=S.logs.filter(l=>l.id!==id);save();closeModal();renderToday()}
 function logDetail(id){const l=S.logs.find(x=>x.id===id);if(!l)return;
  TODAY_DATE=l.date;logForm(l.meal,id)}
 /* ================= หน้า: คลังเมนู ================= */
-let MENU_Q='',MENU_AGE='fit';
-function renderMenu(){const m=ageM();
- const made={};S.logs.filter(l=>l.child===S.active&&l.rid).forEach(l=>made[l.rid]=(made[l.rid]||0)+1);
- let list=allRecipes();
- if(MENU_AGE==='fit')list=list.filter(r=>m>=r.a[0]&&m<=r.a[1]);
- if(MENU_Q)list=list.filter(r=>r.n.includes(MENU_Q)||r.ings.some(([id])=>ING[id]?.n.includes(MENU_Q)));
- list.sort((a,b)=>a.a[0]-b.a[0]);
- let h=`<div class="row" style="margin-top:12px">
+let MENU_Q='',MENU_AGE='fit',MENU_VIEW='lib';
+function renderMenu(){
+ const sg=`<div class="seg" style="margin-top:12px">
+  <button class="${MENU_VIEW==='lib'?'on':''}" onclick="MENU_VIEW='lib';renderMenu()">🍳 คลังเมนู</button>
+  <button class="${MENU_VIEW==='ideas'?'on':''}" onclick="MENU_VIEW='ideas';renderMenu()">💡 ไอเดีย 300 เมนู</button></div>`;
+ if(MENU_VIEW==='ideas'){renderIdeas(sg);return}
+ const m=ageM();
+ let h=sg+`<div class="row" style="margin-top:9px">
   <div style="flex:1;position:relative">
-   <input placeholder="ค้นหาเมนู / วัตถุดิบ..." value="${esc(MENU_Q)}" oninput="MENU_Q=this.value;renderMenu()" style="padding-left:34px">
+   <input placeholder="ค้นหาเมนู / วัตถุดิบ..." value="${esc(MENU_Q)}" oninput="MENU_Q=this.value;drawMenuList()" style="padding-left:34px">
    <svg viewBox="0 0 32 32" style="width:17px;height:17px;position:absolute;left:11px;top:11px;color:var(--ink2)"><use href="#i-search"/></svg>
   </div>
   <button class="btn sm ${MENU_AGE==='fit'?'pri':''}" onclick="MENU_AGE=MENU_AGE==='fit'?'all':'fit';renderMenu()">${MENU_AGE==='fit'?'วัย '+ageTxt(m):'ทุกวัย'}</button>
@@ -507,8 +511,16 @@ function renderMenu(){const m=ageM();
   <button class="btn mint sm" onclick="randomMenu()">${svg('i-dice','width:16px;height:16px;vertical-align:-3px')} สุ่มเมนูวันนี้</button>
   <button class="btn sun sm" onclick="recipeForm()">＋ เพิ่มเมนูของฉัน</button>
   <button class="btn sm" onclick="ingManager()">🧺 วัตถุดิบ${S.ings.length?' ('+S.ings.length+')':''}</button>
- </div>`;
- if(!list.length)h+=`<div class="empty">${svg('i-search')}ไม่พบเมนูที่ค้นหา</div>`;
+ </div><div id="menulist"></div>`;
+ $('#view').innerHTML=h;drawMenuList()}
+function drawMenuList(){const el=$('#menulist');if(!el)return;const m=ageM();
+ const made={};S.logs.filter(l=>l.child===S.active&&l.rid).forEach(l=>made[l.rid]=(made[l.rid]||0)+1);
+ let list=allRecipes();
+ if(MENU_AGE==='fit')list=list.filter(r=>m>=r.a[0]&&m<=r.a[1]);
+ if(MENU_Q)list=list.filter(r=>r.n.includes(MENU_Q)||r.ings.some(([id])=>ING[id]?.n.includes(MENU_Q)));
+ list.sort((a,b)=>a.a[0]-b.a[0]);
+ let h='';
+ if(!list.length)h=`<div class="empty">${svg('i-search')}ไม่พบเมนูที่ค้นหา</div>`;
  list.forEach(r=>{const n=nutOf(r.ings),risk=recipeRisk(r),als=recipeAllergens(r);
   h+=`<div class="card rcard" onclick="recipeDetail('${r.id}')">
    <div class="ric" style="background:${risk?'#fde3e3':'var(--mint2)'}"><svg viewBox="0 0 32 32"><use href="#${r.ic||'i-bowl'}"/></svg></div>
@@ -519,8 +531,7 @@ function renderMenu(){const m=ageM();
      ${made[r.id]?`<span class="tag" style="background:var(--mint2)">ทำแล้ว ${made[r.id]} ครั้ง</span>`:''}</div>
     <div class="muted" style="margin-top:2px">${fmt(n[0])} กิโลแคลอรี · โปรตีน ${fmt(n[1],1)} ก.</div>
    </div></div>`});
- $('#view').innerHTML=h}
-
+ el.innerHTML=h}
 function randomMenu(){const m=ageM(),bad=failedAllergens();
  const pool=allRecipes().filter(r=>m>=r.a[0]&&m<=r.a[1]&&!recipeRisk(r));
  if(!pool.length){toast('ไม่มีเมนูที่เหมาะกับวัยนี้');return}
@@ -563,7 +574,7 @@ function recipeDetail(id){const r=getRecipe(id);if(!r)return;
 function logFromRecipe(rid){const h=new Date().getHours();
  const mk=h<10?'br':h<14?'lu':h<17?'sn':'di';
  logForm(mk);setTimeout(()=>{$('#lg-rec').value=rid;logPickRecipe()},50)}
-function delRecipe(id){if(!confirm('ลบเมนูนี้?'))return;S.recipes=S.recipes.filter(r=>r.id!==id);save();closeModal();renderMenu()}
+function delRecipe(id){if(!confirm(trStr('ลบเมนูนี้?')))return;S.recipes=S.recipes.filter(r=>r.id!==id);save();closeModal();renderMenu()}
 
 /* ===== เพิ่ม/แก้เมนูเอง ===== */
 function recipeForm(editId){const ed=editId?getRecipe(editId):null;
@@ -597,6 +608,48 @@ function saveRecipe(editId){const n=$('#rf-name').value.trim();
   steps:$('#rf-steps').value.split('\n').map(s=>s.trim()).filter(Boolean)};
  if(editId){Object.assign(getRecipe(editId),data)}else S.recipes.push({id:'u'+uid(),...data});
  save();closeModal();toast('บันทึกเมนูแล้ว ⭐');renderMenu()}
+
+
+/* ================= ไอเดีย 300 เมนูสำหรับลูกน้อย (ไทย|EN) ================= */
+const KLINKS=[
+['โจ๊ก & ข้าวบด 6–8 เดือน','Porridge & purees 6–8 mo',[['ข้าวบดนมแม่','Rice puree with breast milk'],['โจ๊กข้าวฟักทอง','Pumpkin rice porridge'],['ข้าวบดตับไก่','Chicken liver rice puree'],['โจ๊กไข่แดง','Egg yolk congee'],['ข้าวบดแครอท','Carrot rice puree'],['ข้าวบดผักโขม','Spinach rice puree'],['โจ๊กปลานิล','Tilapia congee'],['ข้าวบดบรอกโคลี','Broccoli rice puree'],['โจ๊กฟักทองไข่แดง','Pumpkin & yolk congee'],['ข้าวบดมันหวาน','Sweet potato rice puree'],['โจ๊กตำลึง','Ivy gourd congee'],['ข้าวบดเต้าหู้','Tofu rice puree'],['โจ๊กแครอทไก่','Carrot chicken congee'],['ข้าวโอ๊ตบดกล้วย','Banana oat puree'],['ข้าวบดอกไก่','Chicken rice puree'],['โจ๊กผักรวม','Mixed veggie congee'],['ข้าวบดปลาแซลมอน','Salmon rice puree'],['โจ๊กมันฝรั่ง','Potato congee'],['ข้าวบดฟักเขียว','Winter melon rice puree'],['โจ๊กข้าวกล้อง','Brown rice congee'],['ข้าวบดถั่วลันเตา','Pea rice puree'],['โจ๊กหมูสับละเอียด','Fine minced pork congee'],['ข้าวบดข้าวโพดหวาน','Sweet corn rice puree'],['โจ๊กเห็ดหอม','Shiitake congee'],['ข้าวบดแอปเปิลนึ่ง','Steamed apple rice puree'],['โจ๊กบวบ','Zucchini congee'],['ข้าวบดกะหล่ำดอก','Cauliflower rice puree'],['โจ๊กไข่แดงผักโขม','Yolk & spinach congee'],['ข้าวบดลูกเดือย','Millet rice puree'],['โจ๊กปลาช่อน','Snakehead fish congee']]],
+['ผัก & ผลไม้บด 6–8 เดือน','Veggie & fruit purees 6–8 mo',[['กล้วยบด','Mashed banana'],['มะละกอบด','Mashed papaya'],['อะโวคาโดบด','Mashed avocado'],['ฟักทองนึ่งบด','Steamed pumpkin puree'],['มันหวานนึ่งบด','Sweet potato puree'],['แครอทนึ่งบด','Carrot puree'],['แอปเปิลนึ่งบด','Steamed apple puree'],['ลูกแพร์นึ่งบด','Steamed pear puree'],['บรอกโคลีบด','Broccoli puree'],['มันฝรั่งบด','Potato puree'],['ผักโขมบด','Spinach puree'],['ถั่วลันเตาบด','Pea puree'],['ข้าวโพดหวานบดกรองกาก','Strained corn puree'],['แตงโมครูด','Scraped watermelon'],['มะม่วงสุกบด','Ripe mango puree'],['กล้วยบดอะโวคาโด','Banana avocado mash'],['ฟักทองบดนม','Pumpkin milk mash'],['แอปเปิลแครอทบด','Apple carrot puree'],['มันม่วงบด','Purple sweet potato puree'],['กะหล่ำดอกบด','Cauliflower puree'],['บวบนึ่งบด','Zucchini puree'],['ฟักเขียวนึ่งบด','Winter melon puree'],['สาลี่นึ่งบด','Asian pear puree'],['ลูกพรุนบด','Prune puree'],['กล้วยบดข้าวโอ๊ต','Banana oat mash'],['มะละกอกล้วยบด','Papaya banana mash'],['แครอทมันหวานบด','Carrot sweet potato puree'],['อะโวคาโดมะม่วงบด','Avocado mango mash'],['แอปเปิลผักโขมบด','Apple spinach puree'],['ลูกแพร์บรอกโคลีบด','Pear broccoli puree']]],
+['เมนู 9–12 เดือน','Meals 9–12 mo',[['ข้าวต้มหมูสับ','Minced pork soft rice'],['ข้าวต้มปลา','Fish soft rice'],['ไข่ตุ๋นนุ่ม','Soft steamed egg'],['ข้าวต้มไก่ฉีก','Shredded chicken soft rice'],['มักกะโรนีไก่ฟักทอง','Chicken pumpkin macaroni'],['ข้าวต้มตับไก่','Chicken liver soft rice'],['ไข่ตุ๋นเต้าหู้','Tofu steamed egg'],['ข้าวต้มกุ้งสับ','Minced shrimp soft rice'],['อูด้งหั่นสั้นน้ำใส','Short udon in clear broth'],['ข้าวต้มแซลมอนบรอกโคลี','Salmon broccoli soft rice'],['เต้าหู้นึ่งหมูสับ','Steamed tofu with pork'],['ข้าวต้มไข่','Egg soft rice'],['ฟักทองนึ่งชิ้นนุ่ม','Soft pumpkin pieces'],['ข้าวต้มผักรวมไก่','Chicken veggie soft rice'],['วุ้นเส้นน้ำใสหมูสับ','Glass noodle pork soup'],['ข้าวต้มปลาทูแกะก้าง','Deboned mackerel soft rice'],['โจ๊กข้นหมูตำลึง','Thick pork ivy gourd congee'],['ข้าวต้มเห็ดไก่','Chicken mushroom soft rice'],['พาสต้าซอสมะเขือเทศหั่นเล็ก','Chopped pasta in tomato sauce'],['ข้าวต้มสามสี','Tri-color soft rice'],['เกี๊ยวน้ำไส้หมูนึ่งนุ่ม','Soft pork wonton soup'],['ข้าวคลุกอะโวคาโดไข่แดง','Avocado yolk rice'],['แกงจืดเต้าหู้อ่อนหมูสับ','Soft tofu pork clear soup'],['ข้าวคลุกแซลมอนผัก','Salmon veggie rice'],['มันบดราดซอสไก่','Mashed potato with chicken sauce'],['ข้าวต้มข้าวกล้องไก่','Brown rice chicken porridge'],['ซุปข้าวโพดข้น','Thick corn soup'],['ข้าวคลุกไข่ต้มบด','Mashed egg rice'],['ก๋วยเตี๋ยวหั่นสั้นน้ำใส','Short noodles in clear soup'],['ข้าวต้มปลาผักโขม','Fish spinach soft rice']]],
+['ฟิงเกอร์ฟู้ด 9 เดือน+','Finger foods 9 mo+',[['แครอทนึ่งแท่ง','Steamed carrot sticks'],['บรอกโคลีนึ่งช่อเล็ก','Steamed broccoli florets'],['มันหวานนึ่งแท่ง','Sweet potato sticks'],['กล้วยหั่นชิ้น','Banana pieces'],['อะโวคาโดแท่ง','Avocado sticks'],['ฟักทองนึ่งชิ้น','Steamed pumpkin pieces'],['แพนเค้กกล้วยชิ้นเล็ก','Mini banana pancakes'],['ไข่ต้มหั่นเสี้ยว','Boiled egg wedges'],['เต้าหู้อบแท่ง','Baked tofu sticks'],['ขนมปังนึ่งนุ่มแถบ','Soft bread strips'],['มะละกอแท่ง','Papaya sticks'],['แตงกวาลอกเปลือกแท่ง','Peeled cucumber sticks'],['พาสต้าเกลียวต้มนุ่ม','Soft fusilli pieces'],['ลูกชิ้นไก่นึ่งนิ่ม','Soft steamed chicken balls'],['แตงโมแท่งไร้เมล็ด','Seedless watermelon sticks'],['มัฟฟินกล้วยจิ๋ว','Mini banana muffins'],['แครกเกอร์ข้าวสำหรับเด็ก','Baby rice crackers'],['ชีสแท่งนิ่มพาสเจอไรซ์','Soft pasteurized cheese sticks'],['มันฝรั่งนึ่งชิ้น','Steamed potato pieces'],['ปลานึ่งชิ้นแกะก้าง','Deboned steamed fish pieces'],['ไข่เจียวหั่นแถบ','Omelet strips'],['สาลี่นึ่งแท่ง','Steamed pear sticks'],['ข้าวปั้นจิ๋ว','Mini rice balls'],['ผักนึ่งรวมสามสี','Tri-color steamed veggies'],['อกไก่นึ่งฉีกเส้น','Shredded steamed chicken'],['มันม่วงนึ่งแท่ง','Purple sweet potato sticks'],['แอปเปิลนึ่งแท่ง','Steamed apple sticks'],['โทสต์อะโวคาโดแถบ','Avocado toast strips'],['แพนเค้กฟักทองจิ๋ว','Mini pumpkin pancakes'],['ข้าวโพดฝักอ่อนนึ่ง','Steamed baby corn']]],
+['ข้าว & เส้น 1–3 ขวบ','Rice & noodles 1–3 yr',[['ข้าวผัดไข่นุ่ม','Soft egg fried rice'],['ข้าวหน้าไก่ไข่','Chicken & egg rice bowl'],['ก๋วยเตี๋ยวน้ำใสหมู','Clear pork noodle soup'],['ข้าวผัดแซลมอน','Salmon fried rice'],['สปาเกตตีซอสมะเขือเทศไก่','Chicken tomato spaghetti'],['ข้าวอบไก่เห็ด','Chicken mushroom baked rice'],['ผัดซีอิ๊วไก่เส้นนุ่ม','Soft chicken pad see ew'],['ข้าวไข่ข้นไก่ฉีก','Creamy egg rice with chicken'],['มักกะโรนีอบชีสผัก','Veggie mac & cheese'],['ข้าวหน้าปลาแซลมอน','Salmon rice bowl'],['ข้าวผัดหมูสับผักรวม','Pork veggie fried rice'],['อูด้งผัดซีอิ๊ว','Stir-fried udon'],['ข้าวมันไก่นุ่มลดมัน','Light chicken rice'],['ข้าวต้มกุ้ง','Shrimp rice soup'],['โอมุไรซ์จิ๋ว','Mini omurice'],['ข้าวคลุกซอสมะเขือเทศไก่','Chicken tomato rice'],['เส้นหมี่ลวกไก่ฉีก','Soft vermicelli with chicken'],['ข้าวห่อสาหร่ายจิ๋ว','Mini kimbap rolls'],['ข้าวผัดอเมริกันเด็ก','Kid american fried rice'],['พาสต้าครีมซอสไก่นมสด','Creamy chicken pasta'],['ข้าวคลุกปลาผัก','Fish veggie mixed rice'],['ก๋วยเตี๋ยวคั่วไก่นุ่ม','Soft chicken noodle stir-fry'],['ข้าวหน้าเต้าหู้หมูสับ','Tofu pork rice bowl'],['บะหมี่ไข่น้ำใสไก่','Egg noodle chicken soup'],['ข้าวกล้องผัดไข่ผัก','Brown rice egg fried rice'],['ข้าวแกงกะหรี่เด็กไม่เผ็ด','Mild kid curry rice'],['เส้นเล็กน้ำใสลูกชิ้นปลานุ่ม','Noodle soup with soft fish balls'],['ข้าวอบฟักทองชีส','Pumpkin cheese baked rice'],['ผัดมักกะโรนีไก่มะเขือเทศ','Chicken tomato macaroni'],['ข้าวจี่ไข่จิ๋ว','Mini grilled egg rice patties']]],
+['ซุป & แกงจืด','Soups',[['แกงจืดเต้าหู้หมูสับ','Tofu pork clear soup'],['แกงจืดตำลึง','Ivy gourd clear soup'],['ซุปฟักทอง','Pumpkin soup'],['ซุปข้าวโพดไก่','Corn chicken soup'],['แกงจืดวุ้นเส้นหมูสับ','Glass noodle pork soup'],['ซุปมันฝรั่งนมสด','Creamy potato soup'],['แกงจืดฟักเขียวไก่','Winter melon chicken soup'],['ซุปมะเขือเทศไม่เผ็ด','Mild tomato soup'],['แกงจืดผักกาดขาวเต้าหู้','Napa cabbage tofu soup'],['ซุปบรอกโคลีชีส','Broccoli cheese soup'],['แกงจืดสาหร่ายหมูสับ','Seaweed pork soup'],['ซุปแครอทข้น','Creamy carrot soup'],['แกงจืดไข่น้ำ','Egg drop clear soup'],['ซุปเห็ดครีมนมสด','Creamy mushroom soup'],['แกงจืดมะระลวกลดขม','Mild bitter gourd soup'],['ซุปไก่ใส่มักกะโรนี','Chicken macaroni soup'],['แกงจืดหัวไชเท้าหมู','Daikon pork soup'],['ซุปผักโขมข้น','Creamy spinach soup'],['ต้มจืดไก่มันฝรั่ง','Chicken potato clear soup'],['ซุปฟักทองนมสด','Pumpkin milk soup'],['แกงจืดกะหล่ำปลีไก่สับ','Cabbage chicken soup'],['ซุปข้าวโอ๊ตไก่','Chicken oat soup'],['แกงจืดเห็ดหอมเต้าหู้','Shiitake tofu soup'],['ซุปมิโสะเด็กโซเดียมต่ำ','Kid miso soup (low sodium)'],['ต้มจืดปลาผักกาดขาว','Fish napa cabbage soup'],['ซุปถั่วลันเตา','Green pea soup'],['แกงจืดบวบไข่','Zucchini egg soup'],['สตูว์ไก่ผักนุ่ม','Soft chicken veggie stew'],['ซุปมันหวานนมสด','Sweet potato milk soup'],['แกงจืดลูกชิ้นปลานุ่มผัก','Soft fish ball veggie soup']]],
+['เมนูไข่','Egg dishes',[['ไข่ตุ๋นทรงเครื่องเด็ก','Kid loaded steamed egg'],['ไข่เจียวนุ่มผักโขม','Soft spinach omelet'],['ไข่คนนมสด','Creamy scrambled eggs'],['ไข่ตุ๋นแครอทเต้าหู้','Carrot tofu steamed egg'],['ไข่ม้วนญี่ปุ่นนุ่ม','Soft tamagoyaki'],['ไข่ดาวน้ำนุ่ม','Soft poached egg'],['ไข่ตุ๋นฟักทอง','Pumpkin steamed egg'],['ออมเล็ตชีสเด็ก','Kid cheese omelet'],['ไข่ตุ๋นนมสด','Milk steamed egg'],['ไข่เจียวข้าวสวยจิ๋ว','Mini rice omelet'],['ไข่อบผักรวมถ้วย','Veggie egg cups'],['ไข่ตุ๋นปลาแซลมอน','Salmon steamed egg'],['ไข่คนอะโวคาโด','Avocado scrambled eggs'],['ไข่เจียวแครอทขูด','Grated carrot omelet'],['ไข่ตุ๋นเห็ดหอม','Shiitake steamed egg'],['ไข่พะโล้เด็กหวานน้อย','Mild five-spice egg'],['ไข่ต้มสุกหั่นเสี้ยว','Hard-boiled egg wedges'],['ไข่เจียวทูน่า','Tuna omelet'],['ไข่ตุ๋นข้าวโพด','Corn steamed egg'],['สครัมเบิลไข่ชีส','Cheesy scrambled eggs'],['ไข่อบมัฟฟินผักชีส','Veggie cheese egg muffins'],['ไข่เจียวฟูนึ่ง','Steamed fluffy omelet'],['ไข่ตุ๋นวุ้นเส้นหมูสับ','Glass noodle pork steamed egg'],['เฟรนช์โทสต์ไข่จิ๋ว','Mini french toast'],['ไข่คนมะเขือเทศ','Tomato scrambled eggs']]],
+['ปลา & เนื้อสัตว์','Fish & meat',[['ปลานิลนึ่งซีอิ๊วเด็ก','Steamed tilapia, kid soy sauce'],['แซลมอนนึ่งมะนาวอ่อน','Mild steamed salmon'],['ปลากะพงนึ่งเต้าหู้','Steamed sea bass with tofu'],['หมูสับนึ่งไข่','Steamed pork with egg'],['ลูกชิ้นไก่นึ่งโฮมเมด','Homemade steamed chicken balls'],['ปลาทูอบแกะก้าง','Baked deboned mackerel'],['ไก่ฉีกอบซอสมะเขือเทศ','Shredded chicken in tomato sauce'],['หมูตุ๋นนุ่มเปื่อย','Tender braised pork'],['ปลาแซลมอนอบฟอยล์','Foil-baked salmon'],['อกไก่นึ่งสมุนไพรอ่อน','Mild herb steamed chicken'],['ลูกชิ้นปลาทำเอง','Homemade fish balls'],['ตับไก่ผัดนุ่ม','Soft chicken liver stir-fry'],['หมูสับผัดฟักทอง','Pork pumpkin stir-fry'],['ไก่ตุ๋นมันฝรั่ง','Braised chicken with potato'],['ปลาดอลลี่อบชีส','Cheese baked dory'],['เนื้อตุ๋นเปื่อยนุ่ม','Tender braised beef'],['ไก่อบซอสเทอริยากิเด็ก','Kid teriyaki chicken'],['หมูปั้นก้อนอบมีตบอล','Baked pork meatballs'],['ปลาผัดขิงอ่อน','Mild ginger fish'],['กุ้งนึ่งสับละเอียด','Minced steamed shrimp'],['ไก่ผัดข้าวโพดอ่อน','Chicken baby corn stir-fry'],['หมูอบมันหวาน','Pork & sweet potato bake'],['มีตบอลไก่ซอสมะเขือเทศ','Chicken meatballs in tomato sauce'],['ปลานึ่งบ๊วยอ่อน','Mild plum steamed fish'],['ตับบดผัดหอมใหญ่','Liver & onion mince']]],
+['ของว่าง & ขนมเฮลตี้','Healthy snacks',[['แพนเค้กกล้วยข้าวโอ๊ต','Banana oat pancakes'],['มัฟฟินกล้วยโฮลวีต','Whole-wheat banana muffins'],['คุกกี้ข้าวโอ๊ตกล้วย','Banana oat cookies'],['เยลลี่ผลไม้ไม่ใส่น้ำตาล','Sugar-free fruit jelly'],['โยเกิร์ตผลไม้','Fruit yogurt'],['ขนมปังกล้วยนึ่ง','Steamed banana bread'],['วุ้นนมสด','Milk jelly'],['มันหวานอบน้ำผึ้ง 1 ขวบ+','Honey sweet potato (1y+)'],['ขนมปังอบกรอบชีส','Cheese bread crisps'],['เค้กกล้วยนึ่ง','Steamed banana cake'],['แซนด์วิชไข่บดจิ๋ว','Mini egg sandwich'],['โดนัทอบกล้วยจิ๋ว','Mini baked banana donuts'],['พุดดิ้งมะม่วงนมสด','Mango milk pudding'],['ขนมผักโขมอบชีส','Spinach cheese bites'],['บัวลอยฟักทองนมสดชิ้นเล็ก','Pumpkin dumplings in milk'],['แครกเกอร์โฮลวีตชีส','Whole-wheat cheese crackers'],['ไอศกรีมกล้วยปั่น','Banana nice cream'],['ทาร์ตไข่จิ๋วนมสด','Mini milk egg tarts'],['ขนมจีบไก่นึ่งจิ๋ว','Mini chicken dumplings'],['เต้าฮวยนมสด','Soft milk pudding'],['สาคูเปียกนมสดหวานน้อย','Mild milk tapioca'],['ฟักทองสังขยานึ่งหวานน้อย','Pumpkin custard (low sugar)'],['ขนมปังหน้าอะโวคาโดบด','Avocado toast bites'],['โอ๊ตบาร์ผลไม้','Fruit oat bars'],['มันม่วงบดปั้นก้อน','Purple sweet potato balls']]],
+['ผลไม้ & เครื่องดื่ม','Fruits & drinks',[['กล้วยหั่นชิ้นพอดีคำ','Bite-size banana'],['มะละกอสุกหั่นเต๋า','Diced ripe papaya'],['แตงโมไร้เมล็ด','Seedless watermelon'],['ส้มแกะใยหั่นชิ้น','Peeled orange segments'],['มะม่วงสุกหั่นเต๋า','Diced ripe mango'],['องุ่นผ่าสี่กันสำลัก','Quartered grapes'],['สตรอว์เบอร์รีหั่นชิ้น','Sliced strawberries'],['บลูเบอร์รีบี้แบน','Flattened blueberries'],['แอปเปิลนึ่งหั่นเต๋า','Steamed diced apple'],['สาลี่หั่นแท่งนึ่ง','Steamed pear sticks'],['กีวีหั่นชิ้น','Sliced kiwi'],['แก้วมังกรหั่นเต๋า','Diced dragon fruit'],['สมูทตี้กล้วยนมแม่ 6 เดือน+','Banana milk smoothie (6m+)'],['สมูทตี้มะม่วงโยเกิร์ต 1 ขวบ+','Mango yogurt smoothie (1y+)'],['น้ำส้มคั้นเจือจาง 1 ขวบ+','Diluted orange juice (1y+)'],['สมูทตี้เบอร์รีกล้วย 1 ขวบ+','Berry banana smoothie (1y+)'],['นมปั่นกล้วยอะโวคาโด 1 ขวบ+','Banana avocado shake (1y+)'],['น้ำแตงโมปั่น 1 ขวบ+','Watermelon blend (1y+)'],['ลูกพีชหั่นชิ้นนุ่ม','Soft peach slices'],['เชอร์รีคว้านเมล็ดผ่าสี่','Pitted quartered cherries'],['ลำไยคว้านเมล็ดผ่าครึ่ง 2 ขวบ+','Pitted halved longan (2y+)'],['ลิ้นจี่คว้านเมล็ดหั่น 2 ขวบ+','Pitted sliced lychee (2y+)'],['มะละกอปั่นนมสด 1 ขวบ+','Papaya milk blend (1y+)'],['แคนตาลูปหั่นเต๋า','Diced cantaloupe'],['ฝรั่งสุกนิ่มขูด','Scraped soft guava']]],
+['เสริมธาตุเหล็ก & แคลเซียม','Iron & calcium boosters',[['ข้าวบดตับไก่ผักโขม','Liver & spinach rice puree'],['ตับไก่บดมันหวาน','Liver sweet potato mash'],['ข้าวผัดตับไก่เด็กโต','Kid liver fried rice'],['ไข่แดงคลุกข้าว','Egg yolk rice'],['ผัดผักโขมเต้าหู้','Spinach tofu stir-fry'],['ข้าวคลุกปลาทูตำลึง','Mackerel ivy gourd rice'],['ซุปถั่วแดงข้น','Red bean soup'],['เต้าหู้นึ่งงาดำบด','Tofu with ground sesame'],['โยเกิร์ตชีสผลไม้','Yogurt, cheese & fruit'],['มักกะโรนีชีสบรอกโคลี','Broccoli mac & cheese'],['ข้าวกล้องต้มไก่ตับ','Brown rice liver porridge'],['ผัดถั่วลันเตาไก่สับ','Pea & chicken mince'],['ปลาเล็กปลาน้อยอบกรอบ 2 ขวบ+','Crispy small fish (2y+)'],['งาดำบดโรยข้าว','Sesame rice sprinkle'],['ซีเรียลเสริมเหล็กนมสด','Iron-fortified cereal with milk'],['ข้าวคลุกไข่แดงบรอกโคลี','Yolk broccoli rice'],['เต้าหู้อ่อนนึ่งปลา','Soft tofu with fish'],['แกงจืดผักโขมหมูสับ','Spinach pork soup'],['ผักรวมอบชีส','Cheesy baked veggies'],['สมูทตี้นมงาดำกล้วย 1 ขวบ+','Banana sesame milk smoothie (1y+)']]]
+];
+let IDEA_Q='',IDEA_CAT='';
+function renderIdeas(sg){
+ let h=sg+`<div class="card" style="background:var(--sun2);margin-top:9px"><p style="font-size:12.5px;margin:0">💡 <b>300 ไอเดียเมนูสำหรับลูกน้อย</b> แบ่งตามวัยและหมวด — แตะ 🔍 ค้นสูตรใน Google หรือ ▶ ดูวิธีทำใน YouTube</p></div>
+ <div class="row" style="margin-top:8px"><div style="flex:1;position:relative">
+  <input placeholder="ค้นหาเมนู..." value="${esc(IDEA_Q)}" oninput="IDEA_Q=this.value;drawIdeaList()" style="padding-left:34px">
+  <svg viewBox="0 0 32 32" style="width:17px;height:17px;position:absolute;left:11px;top:11px;color:var(--ink2)"><use href="#i-search"/></svg></div></div>
+ <div class="row" style="margin-top:8px">
+  <span class="chip ${IDEA_CAT===''?'sel':''}" onclick="IDEA_CAT='';renderMenu()">ทั้งหมด</span>
+  ${KLINKS.map((x,i)=>`<span class="chip ${IDEA_CAT===''+i?'sel':''}" onclick="IDEA_CAT='${i}';renderMenu()">${LANG==='en'?x[1]:x[0]}</span>`).join('')}</div>
+ <div id="idealist"></div>`;
+ $('#view').innerHTML=h;drawIdeaList()}
+function drawIdeaList(){const el=$('#idealist');if(!el)return;let h='',n=0;
+ KLINKS.forEach((grp,gi)=>{
+  if(IDEA_CAT!==''&&IDEA_CAT!==''+gi)return;
+  const cat=LANG==='en'?grp[1]:grp[0];
+  const its=grp[2].filter(x=>!IDEA_Q||x[0].includes(IDEA_Q)||x[1].toLowerCase().includes(IDEA_Q.toLowerCase()));
+  if(!its.length)return;
+  h+=`<h4 class="sec">${cat} (${its.length})</h4><div class="card" style="margin:4px 0">`;
+  its.forEach(([th,en])=>{n++;const nm=LANG==='en'?en:th;
+   const q=encodeURIComponent(LANG==='en'?en+' baby toddler recipe':'สูตร '+th+' สำหรับเด็ก');
+   h+=`<div class="trow"><div style="flex:1;font-size:13.5px">${nm}</div>
+    <a class="btn sm" style="text-decoration:none" href="https://www.google.com/search?q=${q}" target="_blank" rel="noopener">🔍</a>
+    <a class="btn sm mint" style="text-decoration:none" href="https://www.youtube.com/results?search_query=${q}" target="_blank" rel="noopener">▶</a></div>`});
+  h+='</div>'});
+ if(!n)h=`<div class="empty">${svg('i-search')}ไม่พบเมนูที่ค้นหา</div>`;
+ el.innerHTML=h+`<p class="muted" style="font-size:11px;padding:0 4px">เลือกเนื้อสัมผัสให้เหมาะกับวัย · ห้ามน้ำผึ้งก่อน 1 ขวบ · เกลือ/น้ำตาลน้อยที่สุด · ระวังชิ้นเสี่ยงสำลัก (องุ่น ลูกชิ้นกลม ถั่วเม็ด)</p>`}
 
 /* ================= หน้า: แผนสัปดาห์ ================= */
 function renderPlan(){const c=child(),m=ageM();
@@ -672,11 +725,11 @@ function saveTrial(){const name=$('#tf-name').value.trim();
  S.trials.push({id:uid(),child:S.active,name,ing:$('#tf-ing').value||null,start:$('#tf-date').value||dstr(),status:'try',note:''});
  save();closeModal();toast('เริ่มลอง '+name+' 🌱');renderNewfood()}
 function trialSet(id,st){const t=S.trials.find(x=>x.id===id);if(!t)return;
- if(st==='fail'){const sym=prompt('อาการที่พบ (เช่น ผื่นรอบปาก, ถ่ายเหลว)');if(sym===null)return;t.note=sym||t.note}
+ if(st==='fail'){const sym=prompt(trStr('อาการที่พบ (เช่น ผื่นรอบปาก, ถ่ายเหลว)'));if(sym===null)return;t.note=sym||t.note}
  t.status=st;save();
  toast(st==='pass'?'เยี่ยม! เพิ่มในรายการกินได้ 🟢':st==='fail'?'จดไว้แล้ว ระบบจะเตือนเมื่อเมนูมีของที่แพ้':'เริ่มลองใหม่');
  renderNewfood()}
-function delTrial(id){if(!confirm('ลบรายการนี้?'))return;S.trials=S.trials.filter(t=>t.id!==id);save();renderNewfood()}
+function delTrial(id){if(!confirm(trStr('ลบรายการนี้?')))return;S.trials=S.trials.filter(t=>t.id!==id);save();renderNewfood()}
 
 /* ================= หน้า: สรุป ================= */
 let STAT_MONTH=dstr().slice(0,7);
@@ -823,7 +876,7 @@ function saveGrow(editId){const date=$('#gf-date').value,w=+$('#gf-w').value||nu
  if(editId)Object.assign(S.growth.find(g=>g.id===editId),{date,w,h});
  else S.growth.push({id:uid(),child:S.active,date,w,h});
  save();closeModal();toast('บันทึกแล้ว 🌱');renderGrow()}
-function delGrow(id){if(!confirm('ลบบันทึกนี้?'))return;S.growth=S.growth.filter(g=>g.id!==id);save();renderGrow()}
+function delGrow(id){if(!confirm(trStr('ลบบันทึกนี้?')))return;S.growth=S.growth.filter(g=>g.id!==id);save();renderGrow()}
 
 /* ================= ตั้งค่า / ลูก / ข้อมูล ================= */
 function openSettings(){let h=`<h2>⚙️ ตั้งค่า</h2><h4 class="sec">ลูกน้อย</h4>`;
@@ -861,7 +914,7 @@ function saveChild(editId){const name=$('#cf-name').value.trim(),bd=$('#cf-bd').
  if(editId){Object.assign(S.children.find(c=>c.id===editId),{name,bd,allergies:al,sex})}
  else{const id=uid();S.children.push({id,name,bd,allergies:al,sex});S.active=id}
  save();closeModal();toast('บันทึกแล้ว 👶');renderAll()}
-function delChild(id){if(!confirm('ลบข้อมูลลูกคนนี้ รวมบันทึกทั้งหมด?'))return;
+function delChild(id){if(!confirm(trStr('ลบข้อมูลลูกคนนี้ รวมบันทึกทั้งหมด?')))return;
  S.children=S.children.filter(c=>c.id!==id);S.logs=S.logs.filter(l=>l.child!==id);
  S.trials=S.trials.filter(t=>t.child!==id);delete S.plans[id];
  if(S.active===id)S.active=S.children[0]?.id||null;
@@ -881,8 +934,91 @@ function addToPlanPicker(rid){let h=`<h2>ใส่แผนวันไหน?</
   h+='</div>'}
  openModal(h)}
 
+
+/* ================= ระบบ 2 ภาษา (ไทย/EN) ================= */
+let LANG='th',EN_KEYS=null;
+const EN={
+'บันทึก & คิดเมนูสำหรับลูกรัก 6 เดือน – 3 ขวบ':'Meal log & planner for little ones, 6 mo – 3 yr',
+'วันนี้':'Today','เมนู':'Menu','แผน':'Plan','ลองใหม่':'New foods','เติบโต':'Growth','สรุป':'Stats',
+'มื้อเช้า':'Breakfast','มื้อกลางวัน':'Lunch','มื้อเย็น':'Dinner','ของว่าง':'Snack','นม':'Milk',
+'หมดเกลี้ยง 😋':'All gone 😋','เกือบหมด':'Most of it','ครึ่งหนึ่ง':'Half','นิดหน่อย':'A little','ไม่ยอมกิน':'Refused',
+'กินหมดเกลี้ยง 😋':'ate it all 😋','กินเกือบหมด':'ate most','กินครึ่งหนึ่ง':'ate half','กินนิดหน่อย':'ate a little','กินไม่ยอมกิน':'refused',
+'อา. ':'Sun ','จ. ':'Mon ','อ. ':'Tue ','พ. ':'Wed ','พฤ. ':'Thu ','ศ. ':'Fri ','ส. ':'Sat ',
+'ม.ค.':'Jan','ก.พ.':'Feb','มี.ค.':'Mar','เม.ย.':'Apr','พ.ค.':'May','มิ.ย.':'Jun','ก.ค.':'Jul','ส.ค.':'Aug','ก.ย.':'Sep','ต.ค.':'Oct','พ.ย.':'Nov','ธ.ค.':'Dec',
+'ก่อนหน้า':'Prev','ถัดไป':'Next','ยังไม่มีบันทึก':'No entries yet','＋ บันทึก':'+ Log','＋ เพิ่ม':'+ Add',
+'สารอาหารที่ได้รับ':'Nutrients received','(เทียบเป้าหมาย/วัน วัย ':'(vs daily target, age ',
+'เป้าหมายโดยประมาณ รวมพลังงานจากนมแม่/นมผงด้วย':'Approximate targets, including milk feeds',' (วัยนี้นมยังเป็นอาหารหลัก)':' (milk is still the main food at this age)',
+'พลังงาน':'Energy','โปรตีน':'Protein','เหล็ก':'Iron','แคลเซียม':'Calcium','วิต.เอ':'Vit A','วิต.ซี':'Vit C','ไขมัน':'Fat','คาร์บ':'Carbs','ธาตุเหล็ก':'Iron','วิตามินเอ':'Vitamin A','วิตามินซี':'Vitamin C','คาร์โบไฮเดรต':'Carbs','ใยอาหาร':'Fiber',
+'ตามแผนวันนี้':'Planned for today','บันทึกว่ากินแล้ว':'Log as eaten',
+'บันทึกมื้อเช้า':'Log breakfast','บันทึกมื้อกลางวัน':'Log lunch','บันทึกมื้อเย็น':'Log dinner','บันทึกของว่าง':'Log snack','บันทึกนม':'Log milk','แก้ไขบันทึก':'Edit entry',
+'นมแม่':'Breast milk','นมผง':'Formula','นมวัวสด':'Fresh milk',' มล.':' ml',
+'เลือกจากคลังเมนู (หรือพิมพ์ชื่อเองด้านล่าง)':'Pick from library (or type below)','– เมนูกำหนดเอง –':'– Custom meal –','ชื่อเมนู':'Meal name','เช่น โจ๊กหมูใส่ไข่':'e.g. pork congee with egg',
+'วัตถุดิบ + ปริมาณ (กรัม/มล.) — ใช้คำนวณสารอาหาร':'Ingredients + amount (g/ml) — for nutrition','วัตถุดิบ + กรัม':'Ingredients + grams','＋ เพิ่มวัตถุดิบ':'+ Add ingredient','🆕 สร้างวัตถุดิบใหม่':'🆕 New ingredient','– เลือกวัตถุดิบ –':'– Select ingredient –','รวม:':'Total:',
+'กินไปเท่าไหร่':'How much eaten','ปฏิกิริยา/อาการ (ถ้ามี เช่น ผื่น คัน ถ่ายเหลว)':'Reaction/symptoms (e.g. rash, itching, loose stool)','ปล่อยว่างถ้าปกติดี':'Leave blank if all good','โน้ตเพิ่มเติม':'Extra note','เช่น ชอบมาก ขอเพิ่ม':'e.g. loved it, wanted more','💾 บันทึก':'💾 Save','ลบ':'Delete',
+'ค้นหาเมนู / วัตถุดิบ...':'Search menus / ingredients...','ค้นหาเมนู...':'Search...','วัย ':'Age ','ทุกวัย':'All ages','ทั้งหมด':'All',
+'สุ่มเมนูวันนี้':'Random menu','＋ เพิ่มเมนูของฉัน':'+ My recipe','เมนูของฉัน':'My recipe','ทำแล้ว ':'made ',' ครั้ง':' times','ไม่พบเมนูที่ค้นหา':'No results',' เดือน':' mo',' ขวบ':' yr',
+'🍳 คลังเมนู':'🍳 Menu library','💡 ไอเดีย 300 เมนู':'💡 300 menu ideas',
+'300 ไอเดียเมนูสำหรับลูกน้อย':'300 menu ideas for little ones',' แบ่งตามวัยและหมวด — แตะ 🔍 ค้นสูตรใน Google หรือ ▶ ดูวิธีทำใน YouTube':' by age and category — tap 🔍 for recipes on Google or ▶ for YouTube videos',
+'เลือกเนื้อสัมผัสให้เหมาะกับวัย · ห้ามน้ำผึ้งก่อน 1 ขวบ · เกลือ/น้ำตาลน้อยที่สุด · ระวังชิ้นเสี่ยงสำลัก (องุ่น ลูกชิ้นกลม ถั่วเม็ด)':'Match texture to age · no honey before age 1 · minimal salt/sugar · watch choking hazards (grapes, round balls, whole nuts)',
+'บดละเอียด':'Fine puree','บดหยาบ':'Coarse mash','สับหยาบ':'Roughly chopped','นุ่มเป็นชิ้น':'Soft pieces','ฟิงเกอร์ฟู้ด':'Finger food','ข้าวนุ่ม':'Soft rice','ปกติหั่นเล็ก':'Regular, cut small','น้ำซุปนุ่ม':'Soft in broth','เส้นนุ่มหั่นสั้น':'Soft short noodles','ซุปข้น':'Thick soup','เส้นหั่นสั้น':'Short noodles','หั่นชิ้นพอดีมือ':'Hand-size pieces','ข้าวต้มนุ่ม':'Soft rice soup','หั่นชิ้นเล็ก':'Small pieces','เนื้อสัมผัส:':'Texture:','เหมาะกับ ':'For ',
+'🎲 เมนูแนะนำวันนี้':'🎲 Menu ideas for today','สุ่มจากเมนูที่เหมาะกับวัย ':'Random picks for age ',' และเลี่ยงของที่เคยแพ้':', avoiding known allergens','📌 ใส่ลงแผนวันนี้':'📌 Add to today','สุ่มใหม่':'Reshuffle','📌 ใส่แผน':'📌 To plan','ใส่แผนวันไหน?':'Add to which day?','ใส่แผนแล้ว 📌':'Added to plan 📌','ใส่ลงแผนแล้ว 📌':'Added to plan 📌',
+'ส่วนประกอบ (1 ที่)':'Ingredients (1 serving)','สารอาหารที่ได้รับ (เต็มจาน)':'Nutrition (full serving)','วิธีทำ':'Steps','เคยทำให้กิน ':'Made ',' ครั้ง ล่าสุด ':' times, last ','🍽️ บันทึกว่ากินมื้อนี้':'🍽️ Log this meal','✏️ แก้ไข':'✏️ Edit','ลบเมนู':'Delete recipe',
+'เมนูนี้มีวัตถุดิบที่ลูกเคยแพ้!':'Contains an allergen your child reacted to!','ระวัง! มีวัตถุดิบที่ลูกเคยแพ้: ':'Careful! Known allergens: ','มี':'Has ',
+'แก้ไขเมนู':'Edit recipe','เพิ่มเมนูของฉัน':'Add my recipe','เช่น ข้าวตุ๋นปลาช่อน':'e.g. fish soft rice','เหมาะตั้งแต่ (เดือน)':'From age (months)','ถึง (เดือน)':'To (months)','วิธีทำ (1 บรรทัดต่อ 1 ขั้นตอน)':'Steps (one per line)','💾 บันทึกเมนู':'💾 Save recipe','บันทึกเมนูแล้ว ⭐':'Recipe saved ⭐',
+'📅 แผนเมนู 7 วัน':'📅 7-day meal plan','สุ่มทั้งสัปดาห์':'Randomize week','แตะช่องเพื่อเลือกเมนู · เมนูจะกรองตามวัย ':'Tap a slot to pick · filtered for age ','พรุ่งนี้':'Tomorrow','เลือกเมนู ':'Pick menu: ','🗑️ ล้างช่องนี้':'🗑️ Clear slot','＋ เลือก':'+ pick','จัดแผนให้แล้ว 🎉 ปรับแก้ได้ตามใจ':'Plan ready 🎉 adjust as you like','ยังไม่มีเมนูเหมาะกับวัยนี้':'No menus fit this age','ไม่มีเมนูที่เหมาะกับวัยนี้':'No menus fit this age',
+'กฎ 3 วัน':'The 3-day rule','เริ่มอาหารใหม่':'Introduce new foods ','ทีละ 1 อย่าง':'one at a time',' ให้ติดต่อกัน 3 วัน สังเกตผื่น อาเจียน ถ่ายเหลว หรือหายใจครืดคราด ถ้าปกติดีถือว่า "ผ่าน" แล้วค่อยเริ่มอย่างถัดไป ลองตอนมื้อเช้า/กลางวันจะสังเกตอาการได้ทั้งวัน':', for 3 days in a row. Watch for rash, vomiting, loose stools or wheezing. If all is well it passes — then try the next food. Offer at breakfast/lunch so you can observe all day.',
+'＋ เริ่มลองอาหารใหม่':'+ Try a new food','🟡 กำลังลอง':'🟡 Trying now','วันที่ ':'Day ',' จาก 3':' of 3','เริ่ม ':'Started ','ผ่าน ✓':'Pass ✓','มีอาการ':'Reacted','ลองใหม่':'Retry','บันทึกเมื่อ ':'Logged ',
+'แพ้ / มีอาการ':'Allergic / reacted','ผ่านแล้ว กินได้':'Passed, safe to eat','ยังไม่มีบันทึกการลองอาหารใหม่':'No food trials yet','เริ่มจดได้เลยค่ะ':'Start logging!',
+'เริ่มลองอาหารใหม่':'Try a new food','เลือกวัตถุดิบจากฐานข้อมูล':'Pick from database','หรือพิมพ์ชื่ออาหารเอง':'Or type a food name','เช่น แก้วมังกร, ปลาช่อน':'e.g. dragon fruit, snakehead fish','วันที่เริ่ม':'Start date','เริ่มลอง 🌱':'Start trial 🌱','เริ่มลอง ':'Trying ','ใส่ชื่ออาหารก่อนนะคะ':'Please enter a food name',
+'เยี่ยม! เพิ่มในรายการกินได้ 🟢':'Great! Added to safe list 🟢','จดไว้แล้ว ระบบจะเตือนเมื่อเมนูมีของที่แพ้':'Noted — menus with this allergen will warn you',
+'ระบุเพศของ ':'Select sex for ',' ก่อนนะคะ':' first','เพื่อเทียบกับกราฟมาตรฐานการเติบโตที่ถูกต้อง':'to use the correct growth charts','👦 ชาย':'👦 Boy','👧 หญิง':'👧 Girl','หญิง':'Girl','ชาย':'Boy',
+'＋ บันทึกน้ำหนัก/ส่วนสูง':'+ Log weight/height','บันทึกน้ำหนัก/ส่วนสูง':'Log weight/height','แก้ไขบันทึกการวัด':'Edit measurement','ล่าสุดของ ':'Latest for ','น้ำหนัก':'Weight','ส่วนสูง':'Height',
+'เปอร์เซ็นไทล์ เช่น P65 = สูง/หนักกว่าเด็กวัยเดียวกัน 65 จาก 100 คน · ช่วง P15–P85 คือตามเกณฑ์ปกติ':'Percentile: P65 = bigger than 65 of 100 same-age kids · P15–P85 is the typical range',
+'⚖️ น้ำหนักตามอายุ':'⚖️ Weight-for-age','📏 ส่วนสูงตามอายุ':'📏 Height-for-age','(กก.)':'(kg)','(ซม.)':'(cm)',
+'ต่ำกว่า 2 ขวบวัดความยาวท่านอน · 2 ขวบขึ้นไปวัดท่ายืน (เส้นมาตรฐานขยับเล็กน้อยที่ 2 ขวบ)':'Under 2 yr: measure lying down · 2 yr+: standing (curves shift slightly at 2 yr)',
+'📒 ประวัติการวัด':'📒 Measurement history','ยังไม่มีบันทึกการวัด':'No measurements yet','ชั่งน้ำหนัก-วัดส่วนสูงแล้วมาจดกันค่ะ':'Measure and log it!',
+'อ้างอิง WHO Child Growth Standards 2006 (ค่าโดยประมาณ) · ใช้เพื่อติดตามแนวโน้ม หากกังวลเรื่องการเจริญเติบโตควรปรึกษากุมารแพทย์':'Based on WHO Child Growth Standards 2006 (approximate) · for trends only; consult a pediatrician if concerned',
+'วันที่วัด':'Date measured','น้ำหนัก (กก.)':'Weight (kg)','ส่วนสูง/ความยาว (ซม.)':'Height/length (cm)','เช่น 9.45':'e.g. 9.45','เช่น 74.5':'e.g. 74.5','ใส่วันที่และน้ำหนักหรือส่วนสูงอย่างน้อย 1 อย่าง':'Enter date plus weight or height','บันทึกแล้ว 🌱':'Saved 🌱',
+'น้อยกว่าเกณฑ์':'Underweight','ค่อนข้างน้อย':'Slightly low','น้ำหนักตามเกณฑ์':'On track','ค่อนข้างมาก':'Slightly high','มากกว่าเกณฑ์':'Above range','เตี้ยกว่าเกณฑ์':'Short for age','ค่อนข้างเตี้ย':'Slightly short','สูงตามเกณฑ์':'On track','ค่อนข้างสูง':'Slightly tall','สูงกว่าเกณฑ์มาก':'Very tall',
+'วันที่มีบันทึก':'Days logged','มื้อที่บันทึก':'Meals logged','กิโลแคลอรีเฉลี่ย/วัน':'Avg kcal/day','โปรตีนเฉลี่ย (ก./วัน)':'Avg protein (g/day)','เหล็กเฉลี่ย (มก./วัน)':'Avg iron (mg/day)','แคลเซียมเฉลี่ย (มก./วัน)':'Avg calcium (mg/day)',
+'พลังงานรายวัน':'Daily energy','เส้นเป้า ':'Target ','🟠 = ต่ำกว่า 70% ของเป้า · แตะแท่งเพื่อดูรายวัน':'🟠 = below 70% of target · tap a bar to view the day','เมนูยอดฮิตเดือนนี้':'Top menus this month','อาการผิดปกติเดือนนี้':'Reactions this month','เดือนนี้ยังไม่มีบันทึก':'No entries this month',
+'⚙️ ตั้งค่า':'⚙️ Settings','ลูกน้อย':'Children','＋ เพิ่มลูก':'+ Add child','เกิด ':'Born ','ข้อมูล':'Data','⬇️ สำรองข้อมูล (ไฟล์)':'⬇️ Backup (file)','⬆️ กู้คืนข้อมูล':'⬆️ Restore',
+'ข้อมูลทั้งหมดเก็บในเครื่องนี้เท่านั้น แนะนำสำรองเป็นไฟล์เป็นระยะ':'All data stays on this device — back up to a file regularly','วิธีติดตั้งเป็นแอป':'Install as an app',
+'เปิดไฟล์นี้ด้วย Chrome บนมือถือ → เมนู ⋮ มุมขวาบน → "เพิ่มลงในหน้าจอหลัก" จะได้ไอคอนแอปบนหน้าจอ เปิดใช้ได้เหมือนแอปทั่วไป ไม่ต้องใช้เน็ต':'Open in Chrome on your phone → ⋮ menu → "Add to Home screen" for an app icon that works offline',
+'⚕️ ข้อมูลโภชนาการเป็นค่าประมาณเพื่อการวางแผน ไม่ใช่คำแนะนำทางการแพทย์ หากสงสัยภาวะแพ้รุนแรงหรือการเจริญเติบโต ปรึกษากุมารแพทย์':'⚕️ Nutrition values are planning estimates, not medical advice. For serious allergy or growth concerns, see a pediatrician.',
+'ยินดีต้อนรับค่ะ!':'Welcome!','เริ่มต้นด้วยการเพิ่มข้อมูลลูกน้อย':'Start by adding your child','เพื่อให้แอปแนะนำเมนูที่เหมาะกับวัยได้':'so menus can match their age','＋ เพิ่มลูกน้อยคนแรก':'+ Add your first child',
+'แก้ไขข้อมูลลูก':'Edit child','เพิ่มลูกน้อย':'Add child','ชื่อเล่น':'Nickname','เช่น น้องไอยู':'e.g. Little IU','วันเกิด':'Birth date','เพศ (ใช้เทียบกราฟมาตรฐานการเติบโต)':'Sex (for growth charts)','สิ่งที่แพ้ที่ทราบอยู่แล้ว (คั่นด้วยจุลภาค ปล่อยว่างได้)':'Known allergies (comma-separated, optional)','เช่น ไข่, นมวัว':'e.g. egg, cow milk','ใส่ชื่อและวันเกิดก่อนนะคะ':'Enter name and birth date','บันทึกแล้ว 👶':'Saved 👶',
+'🧺 วัตถุดิบ':'🧺 Ingredients','🧺 วัตถุดิบของฉัน':'🧺 My ingredients','＋ เพิ่มวัตถุดิบใหม่':'+ New ingredient','ยังไม่มีวัตถุดิบที่เพิ่มเอง':'No custom ingredients yet','เพิ่มวัตถุดิบใหม่':'New ingredient','แก้ไขวัตถุดิบ':'Edit ingredient','ชื่อวัตถุดิบ':'Ingredient name','เช่น ปลาช่อน, เมล็ดเจีย':'e.g. snakehead fish, chia','หมวด':'Category','สารก่อภูมิแพ้ (ถ้ามี)':'Allergen (if any)','– ไม่มี –':'– None –','ระบุเอง...':'Custom...','พิมพ์ชื่อสารก่อภูมิแพ้':'Type allergen name','คุณค่าทางโภชนาการ ต่อ 100 กรัม (ไม่ทราบใส่ 0 ได้)':'Nutrition per 100 g (0 if unknown)','💾 บันทึกวัตถุดิบ':'💾 Save ingredient','บันทึกวัตถุดิบแล้ว 🧺':'Ingredient saved 🧺',' ต่อ 100 ก.':' per 100 g',
+'เพิ่มวัตถุดิบที่ไม่มีในฐานข้อมูล พร้อมค่าโภชนาการต่อ 100 กรัม (ดูจากฉลากอาหารหรือค้นเว็บได้) แล้วเลือกใช้ได้ทุกที่ในแอป — รายการที่เพิ่มเองจะมีเครื่องหมาย ★':'Add foods not in the database with nutrition per 100 g (from labels or the web) — yours are marked ★',
+'พลังงาน (กิโลแคลอรี)':'Energy (kcal)','โปรตีน (ก.)':'Protein (g)','ไขมัน (ก.)':'Fat (g)','คาร์โบไฮเดรต (ก.)':'Carbs (g)','ธาตุเหล็ก (มก.)':'Iron (mg)','แคลเซียม (มก.)':'Calcium (mg)','วิตามินเอ (µg)':'Vitamin A (µg)','วิตามินซี (มก.)':'Vitamin C (mg)',
+'ลบไม่ได้ มีเมนูหรือบันทึกที่ใช้วัตถุดิบนี้อยู่':'Cannot delete: in use by a recipe or log','เพิ่มวัตถุดิบอย่างน้อย 1 อย่าง':'Add at least one ingredient','ใส่ชื่อเมนูก่อนนะคะ':'Please enter a meal name','ใส่ชื่อวัตถุดิบก่อนนะคะ':'Please enter a name','บันทึกเรียบร้อย 🎉':'Saved 🎉','บันทึกแล้ว 🎉':'Saved 🎉','ดาวน์โหลดไฟล์สำรองแล้ว':'Backup downloaded','กู้คืนข้อมูลสำเร็จ ✓':'Restored ✓','ไฟล์ไม่ถูกต้อง':'Invalid file',
+'ลบบันทึกนี้?':'Delete this entry?','ลบเมนูนี้?':'Delete this recipe?','ลบวัตถุดิบนี้?':'Delete this ingredient?','ลบรายการนี้?':'Delete this item?','ลบข้อมูลลูกคนนี้ รวมบันทึกทั้งหมด?':'Delete this child and all records?','อาการที่พบ (เช่น ผื่นรอบปาก, ถ่ายเหลว)':'Symptoms (e.g. rash around mouth, loose stool)',
+'ไข่':'Egg','นมวัว':'Cow milk','แป้งสาลี':'Wheat','ถั่วเหลือง':'Soy','ปลา':'Fish','กุ้ง/สัตว์น้ำมีเปลือก':'Shellfish','ถั่วลิสง':'Peanut','ถั่วเปลือกแข็ง':'Tree nuts','งา':'Sesame',
+'แป้ง':'Grains','ผัก':'Vegetables','โปรตีน':'Protein','ไขมัน':'Fats','ผลไม้':'Fruits','อื่นๆ':'Others',
+'ข้าวสวย':'White rice','ข้าวกล้องสุก':'Brown rice','ข้าวต้ม/โจ๊ก':'Rice porridge','ข้าวโอ๊ต (แห้ง)':'Oats (dry)','ควินัวสุก':'Cooked quinoa','เส้นก๋วยเตี๋ยว (สุก)':'Rice noodles','พาสต้า/มักกะโรนี (สุก)':'Pasta/macaroni','ขนมปังโฮลวีต':'Whole-wheat bread','มันฝรั่งต้ม':'Boiled potato','มันหวาน/มันม่วงนึ่ง':'Steamed sweet potato','ฟักทองนึ่ง':'Steamed pumpkin','แครอท':'Carrot','บรอกโคลี':'Broccoli','ผักโขม':'Spinach','ตำลึง':'Ivy gourd','กะหล่ำปลี/ผักกาดขาว':'Cabbage','มะเขือเทศ':'Tomato','ข้าวโพดหวาน':'Sweet corn','ถั่วลันเตา':'Green peas','เห็ด':'Mushroom','บวบ/ซูกินี':'Zucchini','หอมใหญ่':'Onion','เต้าหู้ขาว':'Tofu','ไข่ไก่ (ทั้งฟอง)':'Whole egg','ไข่แดง':'Egg yolk','อกไก่':'Chicken breast','สะโพกไก่':'Chicken thigh','ตับไก่ (สุก)':'Chicken liver (cooked)','หมูสับไม่ติดมัน/สันใน':'Lean minced pork','เนื้อวัว':'Beef','ปลานิล/ปลากะพง':'Tilapia/sea bass','ปลาแซลมอน':'Salmon','ปลาทู':'Thai mackerel','นมผงชง (นมสูตร)':'Prepared formula','โยเกิร์ตรสธรรมชาติ':'Plain yogurt','ชีส':'Cheese','เนยจืด':'Unsalted butter','น้ำมันรำข้าว/มะกอก':'Rice bran/olive oil','อะโวคาโด':'Avocado','กล้วยน้ำว้า/หอม':'Banana','มะละกอสุก':'Ripe papaya','แอปเปิล':'Apple','สาลี่/ลูกแพร์':'Pear','ส้ม':'Orange','มะม่วงสุก':'Ripe mango','แตงโม':'Watermelon','องุ่น (หั่นเสี้ยว)':'Grapes (quartered)','สตรอว์เบอร์รี':'Strawberry','บลูเบอร์รี':'Blueberry','ถั่วเขียว/ถั่วแดงต้ม':'Boiled mung/red beans','งาดำบด':'Ground black sesame','อัลมอนด์บดละเอียด':'Finely ground almond','เนยถั่ว':'Peanut butter',
+'โจ๊กฟักทองไข่แดง':'Pumpkin & egg yolk congee','ข้าวบดตับไก่ตำลึง':'Liver & ivy gourd rice puree','มันหวานบดนม':'Sweet potato milk mash','กล้วยบดอะโวคาโด':'Banana avocado mash','โจ๊กปลานิลฟักทอง':'Tilapia pumpkin congee','ข้าวโอ๊ตบดมะละกอ':'Papaya oat puree','แครอทเต้าหู้บดข้าว':'Carrot tofu rice mash','มันฝรั่งบรอกโคลีบด':'Potato broccoli mash','ข้าวต้มหมูสับตำลึง':'Pork & ivy gourd soft rice','ไข่ตุ๋นเต้าหู้แครอท':'Tofu carrot steamed egg','แพนเค้กกล้วยข้าวโอ๊ต':'Banana oat pancakes','ข้าวต้มแซลมอนบรอกโคลี':'Salmon broccoli soft rice','มักกะโรนีไก่ฟักทอง':'Chicken pumpkin macaroni','ผักนึ่งฟิงเกอร์ฟู้ด':'Steamed veggie finger food','โยเกิร์ตผลไม้รวม':'Mixed fruit yogurt','ข้าวผัดไข่ผักรวม':'Veggie egg fried rice','แกงจืดเต้าหู้หมูสับ + ข้าว':'Tofu pork soup + rice','สปาเกตตีซอสมะเขือเทศไก่':'Chicken tomato spaghetti','ไข่เจียวนุ่มผักโขม + ข้าว':'Soft spinach omelet + rice','ข้าวหน้าปลาแซลมอนบรอกโคลี':'Salmon broccoli rice bowl','ซุปข้าวโพดไก่':'Corn chicken soup','ก๋วยเตี๋ยวน้ำใสหมูสับ':'Clear pork noodle soup','แซนด์วิชไข่อะโวคาโด':'Egg avocado sandwich','ข้าวหน้าไก่ไข่ (โอยาโกะด้ง)':'Chicken & egg bowl (oyakodon)','ผัดผักรวมเต้าหู้ + ข้าว':'Tofu veggie stir-fry + rice','ข้าวต้มกุ้ง':'Shrimp rice soup','ผลไม้รวมหั่นชิ้น':'Cut mixed fruit','ข้าวกล้องผัดปลาทูตำลึง':'Mackerel brown fried rice',
+'ตับไก่ให้ธาตุเหล็กและวิตามินเอสูงมาก ให้สัปดาห์ละ 1–2 ครั้งพอ':'Chicken liver is very rich in iron & vitamin A — 1–2 times a week is enough','ฟิงเกอร์ฟู้ดฝึกหยิบจับ เหมาะกับวัย 9 เดือนขึ้นไป':'Finger foods build grasping skills, great from 9 months','แซลมอนมีโอเมก้า 3 ช่วยพัฒนาสมอง':'Salmon has omega-3 for brain development','กุ้งเป็นสารก่อภูมิแพ้ ลองครั้งแรกปริมาณน้อยและสังเกตอาการ':'Shrimp is a common allergen — start small and observe','ปลาทูเป็นแหล่งแคลเซียมและโอเมก้า 3 ราคาประหยัด':'Thai mackerel is a budget-friendly calcium & omega-3 source',
+'กิโลแคลอรี':'kcal',' กก.':' kg',' ซม.':' cm','มก.':'mg',' กรัม':' g','กรัม':'g',' ก.':' g',' ด.':' mo'
+};
+function trStr(s){if(LANG!=='en'||!s||!/[฀-๿]/.test(s))return s;
+ if(!EN_KEYS)EN_KEYS=Object.keys(EN).sort((a,b)=>b.length-a.length);
+ for(const k of EN_KEYS){if(s.includes(k))s=s.split(k).join(EN[k])}
+ return s}
+function trEl(n){if(LANG!=='en'||!n)return;
+ if(n.nodeType===3){const v=trStr(n.nodeValue);if(v!==n.nodeValue)n.nodeValue=v;return}
+ if(n.nodeType!==1)return;
+ const w=document.createTreeWalker(n,NodeFilter.SHOW_TEXT),arr=[];
+ while(w.nextNode())arr.push(w.currentNode);
+ arr.forEach(t=>{const v=trStr(t.nodeValue);if(v!==t.nodeValue)t.nodeValue=v});
+ if(n.querySelectorAll)n.querySelectorAll('input,textarea').forEach(i=>{if(i.placeholder)i.placeholder=trStr(i.placeholder)});
+ if((n.tagName==='INPUT'||n.tagName==='TEXTAREA')&&n.placeholder)n.placeholder=trStr(n.placeholder)}
+function toggleLang(){S.lang=(LANG==='th'?'en':'th');save();location.reload()}
+if(typeof MutationObserver!=='undefined'){
+ new MutationObserver(ms=>{if(LANG!=='en')return;ms.forEach(m=>m.addedNodes&&m.addedNodes.forEach(n=>trEl(n)))})
+ .observe(document.body,{childList:true,subtree:true})}
+
 /* ================= เริ่มต้น ================= */
-load();renderAll();
+load();renderAll();if(LANG==='en'){trEl(document.body);document.title='Little Menu 🍚'}document.getElementById('langbtn').textContent=LANG==='en'?'ไทย':'EN';
 /*v2*/
 if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0){navigator.serviceWorker.register('./sw.js')}
 </script>
